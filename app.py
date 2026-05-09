@@ -1,12 +1,18 @@
 from flask import Flask, render_template, jsonify
-from database.db import create_table, insert_log
-from utils.ai_engine import generate_ai_decision
-import random
+import sys, os
+sys.path.insert(0, os.path.dirname(__file__))
 
-emergency_mode = False
+from database.db import create_table, insert_log, get_recent_logs, get_hourly_stats
+from utils.ai_engine import generate_ai_decision, generate_prediction_text
+import random
 
 app = Flask(__name__)
 create_table()
+
+# Global state
+emergency_mode = False
+emergency_lane_active = "North Lane"
+cycle_count = 0
 
 @app.route("/")
 def home():
@@ -15,11 +21,10 @@ def home():
 
 @app.route("/api/traffic-data")
 def traffic_data():
+    global cycle_count
+    cycle_count += 1
 
     vehicle_count = random.randint(50, 200)
-
-    congestion_levels = ["Low", "Medium", "High"]
-    congestion = random.choice(congestion_levels)
 
     north_lane = random.randint(10, 80)
     east_lane = random.randint(10, 80)
@@ -33,79 +38,63 @@ def traffic_data():
         "West Lane": west_lane
     }
 
-    max_density = max(
-        north_lane,
-        east_lane,
-        south_lane,
-        west_lane
-    )
+    max_density = max(lane_data.values())
+    total_density = sum(lane_data.values())
 
     if max_density > 70:
-
+        congestion = "High"
         traffic_alert = (
             "Critical congestion detected. "
             "AI recommends immediate traffic diversion."
         )
-
-    elif max_density > 50:
-
-            traffic_alert = (
-                "Heavy traffic building up at junction."
-            )
-
+    elif max_density > 45:
+        congestion = "Medium"
+        traffic_alert = "Heavy traffic building up at junction."
     else:
+        congestion = "Low"
+        traffic_alert = "Traffic conditions are stable."
 
-        traffic_alert = (
-            "Traffic conditions are stable."
-        )
-
-    active_signal = max(lane_data, key=lane_data.get)
-
-    highest_density = lane_data[active_signal]
-    green_time = 20 + (highest_density // 2)
-    wait_time = max(5, 60 - (green_time // 2))
-    traffic_efficiency = min(98, 50 + (green_time // 2))
-
+    # Prediction data per lane
     prediction_data = {}
-
     for lane in lane_data:
         change = random.randint(-10, 20)
-
-        trend = (
-            "increase"
-            if change >= 0
-            else "decrease"
-        )
-
         prediction_data[lane] = {
             "change": change,
-            "trend": trend
+            "trend": "increase" if change >= 0 else "decrease"
         }
 
     decision = generate_ai_decision(lane_data, prediction_data)
 
-    if trend == "increase":
-
-        prediction_text = (
-            f"Traffic expected to increase "
-            f"by {change} vehicles."
-        )
-
-    else:
-        prediction_text = (
-            f"Traffic expected to reduce "
-            f"by {abs(change)} vehicles."
-        )
-
     if emergency_mode:
+        active_signal = f"{emergency_lane_active} (Emergency)"
+        ai_message = (
+            f"EMERGENCY: Green corridor active for {emergency_lane_active}. "
+            f"All other lanes holding. Priority clearance in progress."
+        )
+        green_time = 60
+    else:
+        active_signal = decision["active_lane"]
+        ai_message = decision["recommendation"]
+        green_time = decision["green_time"]
 
-        active_signal = "Emergency Route"
+    wait_time = max(5, 60 - (green_time // 2))
+    traffic_efficiency = min(98, 50 + (green_time // 2))
 
-        decision = generate_ai_decision(lane_data, prediction_data)
+    prediction_text = generate_prediction_text(lane_data)
 
-    ai_message = decision["recommendation"]
+    # Weighted signal timing for all lanes
+    signal_times = {}
+    total = sum(lane_data.values()) or 1
+    remaining_time = 120  # total cycle
+    for lane, count in lane_data.items():
+        signal_times[lane] = max(10, int((count / total) * remaining_time))
 
-    response = {
+    insert_log(
+        vehicle_count, congestion, active_signal,
+        north_lane, east_lane, south_lane, west_lane, green_time
+    )
+
+    return jsonify({
         "vehicle_count": vehicle_count,
         "congestion": congestion,
         "active_signal": active_signal,
@@ -118,30 +107,50 @@ def traffic_data():
         "green_time": green_time,
         "wait_time": wait_time,
         "traffic_efficiency": traffic_efficiency,
-        "traffic_alert": traffic_alert
-    }
+        "traffic_alert": traffic_alert,
+        "signal_times": signal_times,
+        "congestion_breakdown": decision["congestion_breakdown"],
+        "emergency_mode": emergency_mode,
+        "cycle_count": cycle_count,
+        "total_density": total_density
+    })
 
-    insert_log(vehicle_count, congestion, active_signal)
 
-    return jsonify(response)
+@app.route("/api/emergency/<lane>", methods=["POST"])
+def emergency(lane):
+    global emergency_mode, emergency_lane_active
 
-@app.route("/api/emergency")
-def emergency():
-
-    global emergency_mode
+    valid_lanes = ["North Lane", "East Lane", "South Lane", "West Lane"]
+    if lane not in valid_lanes:
+        return jsonify({"error": "Invalid lane"}), 400
 
     emergency_mode = not emergency_mode
 
+    if emergency_mode:
+        emergency_lane_active = lane
+
     return jsonify({
         "emergency_mode": emergency_mode,
+        "active_lane": emergency_lane_active if emergency_mode else None,
         "message": (
-            "Emergency vehicle detected. "
-            "Green corridor activated."
+            f"Emergency vehicle detected in {lane}. Green corridor activated."
             if emergency_mode
-            else
-            "Emergency mode disabled."
+            else "Emergency mode deactivated. Resuming adaptive signal control."
         )
     })
+
+
+@app.route("/api/history")
+def history():
+    logs = get_recent_logs(20)
+    return jsonify(logs)
+
+
+@app.route("/api/chart-data")
+def chart_data():
+    stats = get_hourly_stats()
+    return jsonify(stats)
+
 
 if __name__ == "__main__":
     app.run(debug=True)

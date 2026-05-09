@@ -1,250 +1,274 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartFlow AI</title>
-
+    <title>SmartFlow AI — Adaptive Junction Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-
 <body>
-
+ 
+    <!-- TOPBAR -->
     <nav class="topbar">
-
-        <div class="logo-section">
-            <h1>SmartFlow AI</h1>
+        <div class="logo-area">
+            <div class="logo-icon">
+                <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                    <circle cx="14" cy="14" r="13" stroke="#00d4ff" stroke-width="1.5"/>
+                    <circle cx="14" cy="14" r="4" fill="#00d4ff"/>
+                    <line x1="14" y1="1" x2="14" y2="6" stroke="#00d4ff" stroke-width="1.5" stroke-linecap="round"/>
+                    <line x1="14" y1="22" x2="14" y2="27" stroke="#00d4ff" stroke-width="1.5" stroke-linecap="round"/>
+                    <line x1="1" y1="14" x2="6" y2="14" stroke="#00d4ff" stroke-width="1.5" stroke-linecap="round"/>
+                    <line x1="22" y1="14" x2="27" y2="14" stroke="#00d4ff" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <div>
+                <h1 class="logo-text">SmartFlow <span>AI</span></h1>
+                <p class="logo-sub">Adaptive Junction Intelligence</p>
+            </div>
         </div>
-
-        <div class="topbar-status">
-            <span class="status-dot"></span>
-            System Active
+        <div class="topbar-center">
+            <div class="stat-pill">
+                <span class="pill-label">Cycle</span>
+                <span class="pill-value mono" id="cycle-count">—</span>
+            </div>
+            <div class="stat-pill">
+                <span class="pill-label">Efficiency</span>
+                <span class="pill-value mono" id="efficiency-display">—%</span>
+            </div>
+            <div class="stat-pill">
+                <span class="pill-label">Avg Wait</span>
+                <span class="pill-value mono" id="wait-display">—s</span>
+            </div>
         </div>
-
+        <div class="topbar-right">
+            <div class="system-status" id="system-status">
+                <span class="pulse-dot"></span>
+                <span>System Active</span>
+            </div>
+        </div>
     </nav>
-
+ 
+    <!-- EMERGENCY BANNER (hidden by default) -->
+    <div class="emergency-banner" id="emergency-banner">
+        <div class="emergency-icon">⚠</div>
+        <span id="emergency-banner-text">EMERGENCY VEHICLE DETECTED — GREEN CORRIDOR ACTIVE</span>
+        <div class="emergency-icon">⚠</div>
+    </div>
+ 
+    <!-- MAIN GRID -->
     <main class="main-grid">
-
-        <!-- LEFT CONTROL PANEL -->
-
+ 
+        <!-- LEFT PANEL: Metrics + Lane Density -->
         <aside class="left-panel">
-
-            <div class="panel-section">
-
-                <div class="metric-item">
-                    <span class="metric-label">
-                        Total Vehicles
-                    </span>
-
-                    <h2 id="vehicle-count" class="metric-value">
-                        124
-                    </h2>
+            <div class="panel-header">Junction Status</div>
+ 
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <span class="metric-label">Vehicles</span>
+                    <span class="metric-value mono" id="vehicle-count">—</span>
                 </div>
-
-                <div class="metric-item">
-                    <span class="metric-label">
-                        Congestion
-                    </span>
-
-                    <h2 id="congestion-level" class="metric-value high">
-                        High
-                    </h2>
+                <div class="metric-card">
+                    <span class="metric-label">Congestion</span>
+                    <span class="metric-value" id="congestion-level">—</span>
                 </div>
-
-                <div class="metric-item">
-                    <span class="metric-label">
-                        Emergency
-                    </span>
-
-                    <h2 id="emergency-status" class="metric-value">
-                        None
-                    </h2>
-                </div>
-
-                <div class="metric-item">
-                    <span class="metric-label">
-                        Active Signal
-                    </span>
-
-                    <h2 id="active-signal" class="metric-value">
-                        North
-                    </h2>
-                </div>
-
             </div>
-
-            <section class="lane-density">
-
-                <h3>Lane Density</h3>
-
-                <div class="lane-row">
-                    <span>North</span>
-                    <span id="north-count">0</span>
+ 
+            <div class="metric-card-wide">
+                <span class="metric-label">Active Signal</span>
+                <span class="metric-value-sm" id="active-signal">Initializing…</span>
+            </div>
+ 
+            <div class="metric-card-wide">
+                <span class="metric-label">Green Time</span>
+                <span class="metric-value mono" id="signal-timer">—s</span>
+            </div>
+ 
+            <!-- Lane Density Bars -->
+            <div class="section-title">Lane Density</div>
+            <div class="lane-bars">
+                <div class="lane-item">
+                    <div class="lane-header">
+                        <span class="lane-dir">N</span>
+                        <span class="lane-direction-label">North</span>
+                        <span class="lane-count mono" id="north-count">0</span>
+                    </div>
+                    <div class="bar-track"><div class="bar-fill north-bar" id="north-bar"></div></div>
+                    <span class="lane-status" id="north-status"></span>
                 </div>
-
-                <div class="lane-row">
-                    <span>East</span>
-                    <span id="east-count">0</span>
+                <div class="lane-item">
+                    <div class="lane-header">
+                        <span class="lane-dir">E</span>
+                        <span class="lane-direction-label">East</span>
+                        <span class="lane-count mono" id="east-count">0</span>
+                    </div>
+                    <div class="bar-track"><div class="bar-fill east-bar" id="east-bar"></div></div>
+                    <span class="lane-status" id="east-status"></span>
                 </div>
-
-                <div class="lane-row">
-                    <span>South</span>
-                    <span id="south-count">0</span>
+                <div class="lane-item">
+                    <div class="lane-header">
+                        <span class="lane-dir">S</span>
+                        <span class="lane-direction-label">South</span>
+                        <span class="lane-count mono" id="south-count">0</span>
+                    </div>
+                    <div class="bar-track"><div class="bar-fill south-bar" id="south-bar"></div></div>
+                    <span class="lane-status" id="south-status"></span>
                 </div>
-
-                <div class="lane-row">
-                    <span>West</span>
-                    <span id="west-count">0</span>
+                <div class="lane-item">
+                    <div class="lane-header">
+                        <span class="lane-dir">W</span>
+                        <span class="lane-direction-label">West</span>
+                        <span class="lane-count mono" id="west-count">0</span>
+                    </div>
+                    <div class="bar-track"><div class="bar-fill west-bar" id="west-bar"></div></div>
+                    <span class="lane-status" id="west-status"></span>
                 </div>
-
-            </section>
-
+            </div>
         </aside>
-
-        <!-- CENTER LIVE JUNCTION -->
-
+ 
+        <!-- CENTER: Junction Visualization -->
         <section class="center-panel">
-
-            <div class="junction-header">
-
-                <h2>Live Traffic Junction</h2>
-
-                <div id="signal-timer">
-                    30s
-                </div>
-
+            <div class="junction-title">
+                <span>Live Traffic Junction</span>
+                <span class="junction-tag" id="junction-state-tag">ADAPTIVE MODE</span>
             </div>
-
-            <div class="intersection">
-
-                <div class="road vertical"></div>
-                <div class="road horizontal"></div>
-
-                <div class="car north-car"></div>
-                <div class="car east-car"></div>
-                <div class="car south-car"></div>
-                <div class="car west-car"></div>
-
-                <div class="ambulance" id="ambulance"></div>
-
-                <div class="signal-box north">
-                    <div class="light red-light"></div>
+ 
+            <!-- THE JUNCTION -->
+            <div class="junction-wrap">
+                <div class="intersection">
+                    <!-- Roads -->
+                    <div class="road v-road"></div>
+                    <div class="road h-road"></div>
+                    <!-- Center Box -->
+                    <div class="junction-center">
+                        <div class="junction-center-grid">
+                            <div class="grid-cell"></div><div class="grid-cell"></div>
+                            <div class="grid-cell"></div><div class="grid-cell"></div>
+                        </div>
+                    </div>
+ 
+                    <!-- Traffic Signals -->
+                    <div class="signal-post north-signal" id="sig-north">
+                        <div class="signal-body">
+                            <div class="signal-light red" id="light-north-red"></div>
+                            <div class="signal-light yellow" id="light-north-yellow"></div>
+                            <div class="signal-light green" id="light-north-green"></div>
+                        </div>
+                        <div class="signal-label">N</div>
+                    </div>
+                    <div class="signal-post east-signal" id="sig-east">
+                        <div class="signal-body signal-h">
+                            <div class="signal-light red" id="light-east-red"></div>
+                            <div class="signal-light yellow" id="light-east-yellow"></div>
+                            <div class="signal-light green" id="light-east-green"></div>
+                        </div>
+                        <div class="signal-label">E</div>
+                    </div>
+                    <div class="signal-post south-signal" id="sig-south">
+                        <div class="signal-body">
+                            <div class="signal-light red" id="light-south-red"></div>
+                            <div class="signal-light yellow" id="light-south-yellow"></div>
+                            <div class="signal-light green" id="light-south-green"></div>
+                        </div>
+                        <div class="signal-label">S</div>
+                    </div>
+                    <div class="signal-post west-signal" id="sig-west">
+                        <div class="signal-body signal-h">
+                            <div class="signal-light red" id="light-west-red"></div>
+                            <div class="signal-light yellow" id="light-west-yellow"></div>
+                            <div class="signal-light green" id="light-west-green"></div>
+                        </div>
+                        <div class="signal-label">W</div>
+                    </div>
+ 
+                    <!-- Cars -->
+                    <div class="car north-car" id="car-north"></div>
+                    <div class="car east-car" id="car-east"></div>
+                    <div class="car south-car" id="car-south"></div>
+                    <div class="car west-car" id="car-west"></div>
+ 
+                    <!-- Ambulance -->
+                    <div class="ambulance" id="ambulance">
+                        <div class="amb-body">
+                            <div class="amb-cross">+</div>
+                        </div>
+                        <div class="amb-light-bar">
+                            <div class="amb-flash left-flash"></div>
+                            <div class="amb-flash right-flash"></div>
+                        </div>
+                    </div>
+ 
+                    <!-- Density mini-labels -->
+                    <div class="density-badge north-badge" id="badge-north">0</div>
+                    <div class="density-badge east-badge" id="badge-east">0</div>
+                    <div class="density-badge south-badge" id="badge-south">0</div>
+                    <div class="density-badge west-badge" id="badge-west">0</div>
                 </div>
-
-                <div class="signal-box east">
-                    <div class="light yellow-light"></div>
-                </div>
-
-                <div class="signal-box south">
-                    <div class="light green-light active-light"></div>
-                </div>
-
-                <div class="signal-box west">
-                    <div class="light red-light"></div>
-                </div>
-
             </div>
-
-            <div class="junction-controls">
-
-                <select id="emergency-lane">
-
-                    <option value="North Lane">
-                        North Lane
-                    </option>
-
-                    <option value="East Lane">
-                        East Lane
-                    </option>
-
-                    <option value="South Lane">
-                        South Lane
-                    </option>
-
-                    <option value="West Lane">
-                        West Lane
-                    </option>
-
+ 
+            <!-- Emergency Controls -->
+            <div class="controls-row">
+                <select id="emergency-lane" class="lane-select">
+                    <option value="North Lane">North Lane</option>
+                    <option value="East Lane">East Lane</option>
+                    <option value="South Lane">South Lane</option>
+                    <option value="West Lane">West Lane</option>
                 </select>
-
-                <button id="emergency-btn">
+                <button id="emergency-btn" class="emergency-btn">
+                    <span class="btn-icon">🚨</span>
                     Trigger Emergency Priority
                 </button>
-
             </div>
-
         </section>
-
-        <!-- RIGHT AI PANEL -->
-
+ 
+        <!-- RIGHT PANEL: AI Feed + Chart -->
         <aside class="right-panel">
-
-            <div class="feed-item">
-
-                <span class="feed-label">
-                    Prediction
-                </span>
-
-                <p id="prediction">
-                    Congestion expected to rise in 10 minutes.
-                </p>
-
+            <div class="panel-header">AI Intelligence Feed</div>
+ 
+            <div class="ai-card prediction-card">
+                <div class="ai-card-tag">Prediction</div>
+                <p id="prediction">Analyzing traffic patterns…</p>
             </div>
-
-            <div class="feed-item">
-
-                <span class="feed-label">
-                    AI Alert
-                </span>
-
-                <p id="traffic-alert">
-                    Heavy traffic detected near junction.
-                </p>
-
+ 
+            <div class="ai-card alert-card" id="alert-card">
+                <div class="ai-card-tag">Alert</div>
+                <p id="traffic-alert">System initializing…</p>
             </div>
-
-            <div class="feed-item">
-
-                <span class="feed-label">
-                    Recommendation
-                </span>
-
-                <p id="ai-message">
-                    Extend green signal duration for South Lane.
-                </p>
-
+ 
+            <div class="ai-card recommendation-card">
+                <div class="ai-card-tag">AI Recommendation</div>
+                <p id="ai-message">Computing optimal signal allocation…</p>
             </div>
-
-            <section class="analytics-section">
-
-                <h3>Traffic Analytics</h3>
-
-                <canvas id="trafficChart"></canvas>
-
-            </section>
-
+ 
+            <!-- Live Chart -->
+            <div class="chart-section">
+                <div class="chart-header">
+                    <span>Vehicle Density — Live</span>
+                    <span class="chart-legend">
+                        <span class="legend-dot" style="background:#00d4ff"></span>Vehicles
+                    </span>
+                </div>
+                <div style="position:relative; height:180px;">
+                    <canvas id="trafficChart" role="img" aria-label="Live vehicle density chart"></canvas>
+                </div>
+            </div>
         </aside>
-
+ 
     </main>
-
-    <section class="activity-panel">
-
-        <h3>Live Activity Feed</h3>
-
-        <div id="activity-log">
-
-            <div class="log-entry">
-                System initialized
-            </div>
-
+ 
+    <!-- ACTIVITY FEED -->
+    <section class="activity-section">
+        <div class="activity-header">
+            <span>Live Activity Feed</span>
+            <span class="activity-count" id="activity-count">0 events</span>
         </div>
-
+        <div id="activity-log"></div>
     </section>
-
+ 
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
-    
 </body>
-
 </html>
+ 
