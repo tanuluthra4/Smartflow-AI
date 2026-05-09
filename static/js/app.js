@@ -14,6 +14,7 @@ const signalTimer = document.getElementById("signal-timer");
 const waitTime = document.getElementById("wait-time");
 const trafficEfficiency = document.getElementById("traffic-efficiency");
 const trafficAlert = document.getElementById("traffic-alert");
+const ambulance = document.getElementById("ambulance");
 
 const emergencyBtn = document.getElementById("emergency-btn");
 
@@ -47,6 +48,20 @@ emergencyBtn.addEventListener("click", async () => {
     activeSignal.textContent = data.emergency_mode
         ? "Emergency Route Active"
         : "Adaptive Traffic Mode";
+
+    if (data.emergency_mode) {
+
+        ambulance.classList.remove("active-ambulance");
+
+        void ambulance.offsetWidth;
+        ambulance.classList.add("active-ambulance");
+        
+        addLog("Emergency vehicle entered smart corridor.");
+
+    } else {
+
+        ambulance.classList.remove("active-ambulance");
+    }
 });
 
 async function fetchTrafficData() {

@@ -274,3 +274,33 @@ button {
         left: 340px;
     }
 }
+
+.ambulance {
+    position: absolute;
+    width: 24px;
+    height: 40px;
+    background: white;
+    border: 2px solid red;
+    border-radius: 4px;
+
+    left: 148px;
+    top: -60px;
+
+    display: none;
+}
+
+.ambulance.active-ambulance {
+    display: block;
+    animation: ambulanceMove 4s linear forwards;
+}
+
+@keyframes ambulanceMove {
+
+    from {
+        top: -60px;
+    }
+
+    to {
+        top: 340px;
+    }
+}
