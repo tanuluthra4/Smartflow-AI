@@ -202,3 +202,75 @@ button {
 .active-light {
     opacity: 1;
 }
+
+.car {
+    position: absolute;
+    width: 20px;
+    height: 35px;
+    background: #38bdf8;
+    border-radius: 4px;
+}
+
+.north-car {
+    left: 150px;
+    top: -40px;
+    animation: moveNorth 6s linear infinite;
+}
+
+.south-car {
+    left: 170px;
+    bottom: -40px;
+    animation: moveSouth 6s linear infinite;
+}
+
+.east-car {
+    right: -40px;
+    top: 150px;
+    animation: moveEast 6s linear infinite;
+}
+
+.west-car {
+    left: -40px;
+    top: 170px;
+    animation: moveWest 6s linear infinite;
+}
+
+@keyframes moveNorth {
+    from {
+        top: -40px;
+    }
+
+    to {
+        top: 340px;
+    }
+}
+
+@keyframes moveSouth {
+    from {
+        bottom: -40px;
+    }
+
+    to {
+        bottom: 340px;
+    }
+}
+
+@keyframes moveEast {
+    from {
+        right: -40px;
+    }
+
+    to {
+        right: 340px;
+    }
+}
+
+@keyframes moveWest {
+    from {
+        left: -40px;
+    }
+
+    to {
+        left: 340px;
+    }
+}
