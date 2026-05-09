@@ -11,6 +11,23 @@ const westCount = document.getElementById("west-count");
 
 const emergencyBtn = document.getElementById("emergency-btn");
 
+emergencyBtn.addEventListener("click", async () => {
+
+    const response = await fetch("/api/emergency");
+
+    const data = await response.json();
+
+    emergencyStatus.textContent = data.emergency_mode
+        ? "Ambulance Detected"
+        : "No Emergency";
+
+    aiMessage.textContent = data.message;
+
+    activeSignal.textContent = data.emergency_mode
+        ? "Emergency Route Active"
+        : "Adaptive Traffic Mode";
+});
+
 async function fetchTrafficData() {
 
     const response = await fetch("/api/traffic-data");

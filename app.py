@@ -1,8 +1,9 @@
 from flask import Flask, render_template, jsonify
 import random
 
-app = Flask(__name__)
+emergency_mode = False
 
+app = Flask(__name__)
 
 @app.route("/")
 def home():
@@ -51,6 +52,15 @@ def traffic_data():
 
     prediction = random.choice(predictions)
 
+    if emergency_mode:
+
+        active_signal = "Emergency Route"
+
+        ai_message = (
+            "Emergency vehicle detected. "
+            "AI activated green corridor priority."
+        )
+
     response = {
         "vehicle_count": vehicle_count,
         "congestion": congestion,
@@ -65,6 +75,23 @@ def traffic_data():
 
     return jsonify(response)
 
+@app.route("/api/emergency")
+def emergency():
+
+    global emergency_mode
+
+    emergency_mode = not emergency_mode
+
+    return jsonify({
+        "emergency_mode": emergency_mode,
+        "message": (
+            "Emergency vehicle detected. "
+            "Green corridor activated."
+            if emergency_mode
+            else
+            "Emergency mode disabled."
+        )
+    })
 
 if __name__ == "__main__":
     app.run(debug=True)
