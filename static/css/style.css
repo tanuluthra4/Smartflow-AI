@@ -5,10 +5,16 @@
 }
 
 body {
-    background: #0f172a;
+    background:
+        linear-gradient(
+            135deg,
+            #020617,
+            #0f172a,
+            #111827
+        );
     color: #e2e8f0;
     font-family: Arial, sans-serif;
-    max-width: 1400px;
+    max-width: 1600px;
     margin: auto;
     padding: 24px;
     line-height: 1.6;
@@ -17,9 +23,18 @@ body {
 .hero {
     text-align: center;
     margin-bottom: 40px;
-    padding: 30px;
-    background: #1e293b;
-    border-radius: 14px;
+    padding: 50px 30px;
+    background:
+        linear-gradient(
+            135deg,
+            rgba(30, 41, 59, 0.9),
+            rgba(15, 23, 42, 0.95)
+        );
+    border-radius: 28px;
+    border:
+        1px solid rgba(255, 255, 255, 0.08);
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.25);
 }
 
 .hero h1 {
@@ -67,17 +82,23 @@ body {
 }
 
 .card {
-    background: #1e293b;
-    border: 1px solid #334155;
-    border-radius: 18px;
+    background:
+        rgba(30, 41, 59, 0.75);
+    backdrop-filter: blur(10px);
+    border:
+        1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 22px;
     padding: 24px;
-    min-height: 180px;
-    transition: 0.2s ease;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: 0.25s ease;
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
 }
 
 .card:hover {
-    transform: translateY(-4px);
+    transform: translateY(-6px);
+    border-color:
+        rgba(56, 189, 248, 0.4);
 }
 
 .card h2 {
@@ -399,10 +420,18 @@ select {
 }
 
 .summary-card {
-    background: #1e293b;
-    padding: 20px;
-    border-radius: 12px;
+    background:
+        rgba(30, 41, 59, 0.75);
+    border-radius: 20px;
+    padding: 24px;
     text-align: center;
+    border:
+        1px solid rgba(255, 255, 255, 0.06);
+    transition: 0.2s ease;
+}
+
+.summary-card:hover {
+    transform: translateY(-4px);
 }
 
 .summary-card h3 {
@@ -417,11 +446,14 @@ select {
 }
 
 footer {
-    margin-top: 40px;
-    padding: 20px;
+    margin-top: 50px;
+    padding: 28px;
     text-align: center;
-    background: #1e293b;
-    border-radius: 12px;
+    background:
+        rgba(30, 41, 59, 0.7);
+    border-radius: 22px;
+    border:
+        1px solid rgba(255, 255, 255, 0.06);
     color: #cbd5e1;
 }
 
