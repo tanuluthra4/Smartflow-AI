@@ -4,6 +4,10 @@ const activeSignal = document.getElementById("active-signal");
 const aiMessage = document.getElementById("ai-message");
 const emergencyStatus = document.getElementById("emergency-status");
 const predictionText = document.getElementById("prediction");
+const northCount = document.getElementById("north-count");
+const eastCount = document.getElementById("east-count");
+const southCount = document.getElementById("south-count");
+const westCount = document.getElementById("west-count");
 
 const emergencyBtn = document.getElementById("emergency-btn");
 
@@ -17,6 +21,10 @@ async function fetchTrafficData() {
     activeSignal.textContent = data.active_signal;
     aiMessage.textContent = data.ai_message;
     predictionText.textContent = data.prediction;
+    northCount.textContent = data.north_lane;
+    eastCount.textContent = data.east_lane;
+    southCount.textContent = data.south_lane;
+    westCount.textContent = data.west_lane;
 }
 
 setInterval(fetchTrafficData, 4000);

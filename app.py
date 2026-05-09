@@ -20,6 +20,11 @@ def traffic_data():
     signals = ["North Lane", "East Lane", "South Lane", "West Lane"]
     active_signal = random.choice(signals)
 
+    north_lane = random.randint(10, 80)
+    east_lane = random.randint(10, 80)
+    south_lane = random.randint(10, 80)
+    west_lane = random.randint(10, 80)
+
     predictions = [
         "Heavy congestion expected in 10 minutes.",
         "Traffic flow likely to improve shortly.",
@@ -35,7 +40,11 @@ def traffic_data():
         "congestion": congestion,
         "active_signal": active_signal,
         "ai_message": f"AI optimized signal timing for {active_signal}.",
-        "prediction": prediction
+        "prediction": prediction,
+        "north_lane": north_lane,
+        "east_lane": east_lane,
+        "south_lane": south_lane,
+        "west_lane": west_lane
     }
 
     return jsonify(response)
