@@ -18,12 +18,28 @@ def traffic_data():
     congestion = random.choice(congestion_levels)
 
     signals = ["North Lane", "East Lane", "South Lane", "West Lane"]
-    active_signal = random.choice(signals)
 
     north_lane = random.randint(10, 80)
     east_lane = random.randint(10, 80)
     south_lane = random.randint(10, 80)
     west_lane = random.randint(10, 80)
+
+    lane_data = {
+        "North Lane": north_lane,
+        "East Lane": east_lane,
+        "South Lane": south_lane,
+        "West Lane": west_lane
+    }
+
+    active_signal = max(lane_data, key=lane_data.get)
+
+    highest_density = lane_data[active_signal]
+
+    ai_message = (
+        f"AI increased green signal duration for "
+        f"{active_signal} due to high traffic density "
+        f"({highest_density} vehicles)."
+    )
 
     predictions = [
         "Heavy congestion expected in 10 minutes.",
@@ -39,12 +55,12 @@ def traffic_data():
         "vehicle_count": vehicle_count,
         "congestion": congestion,
         "active_signal": active_signal,
-        "ai_message": f"AI optimized signal timing for {active_signal}.",
         "prediction": prediction,
         "north_lane": north_lane,
         "east_lane": east_lane,
         "south_lane": south_lane,
-        "west_lane": west_lane
+        "west_lane": west_lane,
+        "ai_message": ai_message,
     }
 
     return jsonify(response)
