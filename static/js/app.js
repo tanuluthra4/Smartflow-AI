@@ -32,3 +32,23 @@ emergencyBtn.addEventListener("click", () => {
 
     activeSignal.textContent = "Emergency Route Active";
 });
+
+const ctx = document.getElementById("trafficChart");
+
+const trafficChart = new Chart(ctx, {
+    type: "line",
+
+    data: {
+        labels: ["1 PM", "2 PM", "3 PM", "4 PM", "5 PM"],
+
+        datasets: [{
+            label: "Vehicle Density",
+
+            data: [65, 90, 120, 80, 140]
+        }]
+    },
+
+    options: {
+        responsive: true
+    }
+});

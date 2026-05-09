@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SmartFlow AI</title>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
@@ -64,6 +65,11 @@
             <p id="prediction">
                 Congestion expected to increase in 10 minutes.
             </p>
+        </section>
+
+        <section class="card">
+            <h2>Traffic Analytics</h2>
+            <canvas id="trafficChart"></canvas>
         </section>
 
     </main>
