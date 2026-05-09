@@ -12,221 +12,239 @@
 
 <body>
 
-    <section class="hero">
+    <nav class="topbar">
 
-        <h1>SmartFlow AI</h1>
-
-        <p>
-            Intelligent AI-Based Junction Optimization System
-            for Adaptive Traffic Management and Emergency
-            Vehicle Prioritization.
-        </p>
-
-    </section>
-
-    <section class="card ai-status-panel">
-
-        <h2>AI Optimization Engine Status</h2>
-
-        <div class="status-grid">
-
-            <div>
-                <h3>AI Engine</h3>
-                <p class="online">ONLINE</p>
-            </div>
-
-            <div>
-                <h3>Traffic Analysis</h3>
-                <p class="online">ACTIVE</p>
-            </div>
-
-            <div>
-                <h3>Emergency Detection</h3>
-                <p class="online">MONITORING</p>
-            </div>
-
-            <div>
-                <h3>Prediction Engine</h3>
-                <p class="online">RUNNING</p>
-            </div>
-
+        <div class="logo-section">
+            <h1>SmartFlow AI</h1>
         </div>
 
-    </section>
-
-    <section class="summary-bar">
-
-        <div class="summary-card">
-            <h3>Traffic Reduction</h3>
-            <p>34%</p>
+        <div class="topbar-status">
+            <span class="status-dot"></span>
+            System Active
         </div>
 
-        <div class="summary-card">
-            <h3>Emergency Response</h3>
-            <p>12 sec</p>
-        </div>
+    </nav>
 
-        <div class="summary-card">
-            <h3>AI Decisions</h3>
-            <p>1,248</p>
-        </div>
+    <main class="main-grid">
 
-        <div class="summary-card">
-            <h3>System Accuracy</h3>
-            <p>96%</p>
-        </div>
+        <!-- LEFT CONTROL PANEL -->
 
-    </section>
+        <aside class="left-panel">
 
-    <main class="control-center">
+            <div class="panel-section">
 
-        <div class="left-panel">
+                <div class="metric-item">
+                    <span class="metric-label">
+                        Total Vehicles
+                    </span>
 
-            <section class="card">
-                <h2>Lane Traffic Density</h2>
-
-                <p>North Lane: <span id="north-count">0</span></p>
-                <p>East Lane: <span id="east-count">0</span></p>
-                <p>South Lane: <span id="south-count">0</span></p>
-                <p>West Lane: <span id="west-count">0</span></p>
-            </section>
-
-            <section class="card">
-                <h2>Total Vehicles</h2>
-                <p id="vehicle-count">124</p>
-            </section>
-
-            <section class="card">
-                <h2>Congestion Level</h2>
-                <p id="congestion-level" class="medium">Medium</p>
-            </section>
-
-            <section class="card">
-                <h2>Average Wait Time</h2>
-                <p id="wait-time">12 sec</p>
-            </section>
-
-            <section class="card">
-                <h2>Traffic Flow Efficiency</h2>
-                <p id="traffic-efficiency">82%</p>
-            </section>
-        </div>
-
-        <div class="center-panel">
-            <section class="card">
-                <h2>Traffic Prediction</h2>
-                <p id="prediction">
-                    Congestion expected to increase in 10 minutes.
-                </p>
-            </section>
-
-            <section class="card">
-                <h2>AI Traffic Alerts</h2>
-
-                <div id="traffic-alert">
-                    No critical alerts detected.
-                </div>
-            </section>
-
-            <section class="card">
-                <h2>AI Recommendation</h2>
-                <p id="ai-message">
-                    Increase green signal duration for North Lane.
-                </p>
-            </section>
-
-            <section class="junction card junction-main">
-
-                <h2>Smart Traffic Junction</h2>
-
-                <div class="intersection">
-
-                    <div class="road vertical"></div>
-                    <div class="road horizontal"></div>
-
-
-                    <div class="car north-car"></div>
-                    <div class="car east-car"></div>
-                    <div class="car south-car"></div>
-                    <div class="car west-car"></div>
-
-                    <div class="ambulance" id="ambulance"></div>
-
-                    <div class="signal-box north">
-                        <div class="light red-light"></div>
-                    </div>
-
-                    <div class="signal-box east">
-                        <div class="light yellow-light"></div>
-                    </div>
-
-                    <div class="signal-box south">
-                        <div class="light green-light active-light"></div>
-                    </div>
-
-                    <div class="signal-box west">
-                        <div class="light red-light"></div>
-                    </div>
-
+                    <h2 id="vehicle-count" class="metric-value">
+                        124
+                    </h2>
                 </div>
 
-                <h3 id="signal-timer">Green Signal Time: 30s</h3>
+                <div class="metric-item">
+                    <span class="metric-label">
+                        Congestion
+                    </span>
+
+                    <h2 id="congestion-level" class="metric-value high">
+                        High
+                    </h2>
+                </div>
+
+                <div class="metric-item">
+                    <span class="metric-label">
+                        Emergency
+                    </span>
+
+                    <h2 id="emergency-status" class="metric-value">
+                        None
+                    </h2>
+                </div>
+
+                <div class="metric-item">
+                    <span class="metric-label">
+                        Active Signal
+                    </span>
+
+                    <h2 id="active-signal" class="metric-value">
+                        North
+                    </h2>
+                </div>
+
+            </div>
+
+            <section class="lane-density">
+
+                <h3>Lane Density</h3>
+
+                <div class="lane-row">
+                    <span>North</span>
+                    <span id="north-count">0</span>
+                </div>
+
+                <div class="lane-row">
+                    <span>East</span>
+                    <span id="east-count">0</span>
+                </div>
+
+                <div class="lane-row">
+                    <span>South</span>
+                    <span id="south-count">0</span>
+                </div>
+
+                <div class="lane-row">
+                    <span>West</span>
+                    <span id="west-count">0</span>
+                </div>
+
+            </section>
+
+        </aside>
+
+        <!-- CENTER LIVE JUNCTION -->
+
+        <section class="center-panel">
+
+            <div class="junction-header">
+
+                <h2>Live Traffic Junction</h2>
+
+                <div id="signal-timer">
+                    30s
+                </div>
+
+            </div>
+
+            <div class="intersection">
+
+                <div class="road vertical"></div>
+                <div class="road horizontal"></div>
+
+                <div class="car north-car"></div>
+                <div class="car east-car"></div>
+                <div class="car south-car"></div>
+                <div class="car west-car"></div>
+
+                <div class="ambulance" id="ambulance"></div>
+
+                <div class="signal-box north">
+                    <div class="light red-light"></div>
+                </div>
+
+                <div class="signal-box east">
+                    <div class="light yellow-light"></div>
+                </div>
+
+                <div class="signal-box south">
+                    <div class="light green-light active-light"></div>
+                </div>
+
+                <div class="signal-box west">
+                    <div class="light red-light"></div>
+                </div>
+
+            </div>
+
+            <div class="junction-controls">
 
                 <select id="emergency-lane">
-                    <option value="North Lane">North Lane</option>
-                    <option value="East Lane">East Lane</option>
-                    <option value="South Lane">South Lane</option>
-                    <option value="West Lane">West Lane</option>
+
+                    <option value="North Lane">
+                        North Lane
+                    </option>
+
+                    <option value="East Lane">
+                        East Lane
+                    </option>
+
+                    <option value="South Lane">
+                        South Lane
+                    </option>
+
+                    <option value="West Lane">
+                        West Lane
+                    </option>
+
                 </select>
 
                 <button id="emergency-btn">
-                    Trigger Ambulance Priority
+                    Trigger Emergency Priority
                 </button>
+
+            </div>
+
+        </section>
+
+        <!-- RIGHT AI PANEL -->
+
+        <aside class="right-panel">
+
+            <div class="feed-item">
+
+                <span class="feed-label">
+                    Prediction
+                </span>
+
+                <p id="prediction">
+                    Congestion expected to rise in 10 minutes.
+                </p>
+
+            </div>
+
+            <div class="feed-item">
+
+                <span class="feed-label">
+                    AI Alert
+                </span>
+
+                <p id="traffic-alert">
+                    Heavy traffic detected near junction.
+                </p>
+
+            </div>
+
+            <div class="feed-item">
+
+                <span class="feed-label">
+                    Recommendation
+                </span>
+
+                <p id="ai-message">
+                    Extend green signal duration for South Lane.
+                </p>
+
+            </div>
+
+            <section class="analytics-section">
+
+                <h3>Traffic Analytics</h3>
+
+                <canvas id="trafficChart"></canvas>
+
             </section>
 
-        </div>
-
-        <div class="right-panel">
-            <section class="card">
-                <h2>Emergency Status</h2>
-                <p id="emergency-status">No Emergency</p>
-            </section>
-
-            <section class="card">
-                <h2>Active Signal</h2>
-                <p id="active-signal">North Lane</p>
-            </section>
-
-            <section class="card">
-                <h2>System Activity Log</h2>
-
-                <ul id="activity-log">
-                    <li>System initialized.</li>
-                </ul>
-            </section>
-        </div>
+        </aside>
 
     </main>
 
-    <section class="card">
-        <h2>Traffic Analytics</h2>
-        <canvas id="trafficChart"></canvas>
+    <section class="activity-panel">
+
+        <h3>Live Activity Feed</h3>
+
+        <div id="activity-log">
+
+            <div class="log-entry">
+                System initialized
+            </div>
+
+        </div>
+
     </section>
 
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
-
-    <footer>
-
-        <p>
-            SmartFlow AI • Built using Flask, JavaScript,
-            SQLite, Chart.js and Adaptive AI Logic
-        </p>
-
-        <p>
-            Developed by Tanu Luthra
-        </p>
-
-    </footer>
+    
 </body>
 
 </html>
