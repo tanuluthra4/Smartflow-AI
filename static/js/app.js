@@ -10,6 +10,7 @@ const southCount = document.getElementById("south-count");
 const westCount = document.getElementById("west-count");
 const activityLog = document.getElementById("activity-log");
 const ctx = document.getElementById("trafficChart");
+const signalTimer = document.getElementById("signal-timer");
 
 const emergencyBtn = document.getElementById("emergency-btn");
 
@@ -73,6 +74,8 @@ async function fetchTrafficData() {
     eastCount.textContent = data.east_lane;
     southCount.textContent = data.south_lane;
     westCount.textContent = data.west_lane;
+    signalTimer.textContent =
+        `Green Signal Time: ${data.green_time}s`;
 }
 
 setInterval(fetchTrafficData, 4000);
