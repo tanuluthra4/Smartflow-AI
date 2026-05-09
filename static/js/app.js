@@ -15,6 +15,7 @@ const waitTime = document.getElementById("wait-time");
 const trafficEfficiency = document.getElementById("traffic-efficiency");
 const trafficAlert = document.getElementById("traffic-alert");
 const ambulance = document.getElementById("ambulance");
+const emergencyLane = document.getElementById("emergency-lane");
 
 const emergencyBtn = document.getElementById("emergency-btn");
 
@@ -35,8 +36,8 @@ function addLog(message) {
 
 emergencyBtn.addEventListener("click", async () => {
 
+    const selectedLane = emergencyLane.value;
     const response = await fetch("/api/emergency");
-
     const data = await response.json();
 
     emergencyStatus.textContent = data.emergency_mode
@@ -46,7 +47,7 @@ emergencyBtn.addEventListener("click", async () => {
     aiMessage.textContent = data.message;
 
     activeSignal.textContent = data.emergency_mode
-        ? "Emergency Route Active"
+        ? `${selectedLane} Priority Active`
         : "Adaptive Traffic Mode";
 
     if (data.emergency_mode) {
@@ -55,8 +56,10 @@ emergencyBtn.addEventListener("click", async () => {
 
         void ambulance.offsetWidth;
         ambulance.classList.add("active-ambulance");
-        
-        addLog("Emergency vehicle entered smart corridor.");
+
+        addLog(
+            `Emergency vehicle detected in ${selectedLane}.`
+        );
 
     } else {
 
