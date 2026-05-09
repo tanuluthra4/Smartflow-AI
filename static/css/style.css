@@ -101,3 +101,16 @@ button {
     font-weight: bold;
     cursor: pointer;
 }
+
+#activity-log {
+    list-style: none;
+    margin-top: 10px;
+}
+
+#activity-log li {
+    padding: 10px;
+    margin-bottom: 8px;
+    background: #334155;
+    border-radius: 6px;
+    font-size: 14px;
+}

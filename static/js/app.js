@@ -8,8 +8,25 @@ const northCount = document.getElementById("north-count");
 const eastCount = document.getElementById("east-count");
 const southCount = document.getElementById("south-count");
 const westCount = document.getElementById("west-count");
+const activityLog = document.getElementById("activity-log");
+const ctx = document.getElementById("trafficChart");
 
 const emergencyBtn = document.getElementById("emergency-btn");
+
+function addLog(message) {
+
+    const logItem = document.createElement("li");
+
+    const currentTime = new Date().toLocaleTimeString();
+
+    logItem.textContent = `[${currentTime}] ${message}`;
+
+    activityLog.prepend(logItem);
+
+    if (activityLog.children.length > 6) {
+        activityLog.removeChild(activityLog.lastChild);
+    }
+}
 
 emergencyBtn.addEventListener("click", async () => {
 
@@ -34,7 +51,7 @@ async function fetchTrafficData() {
     const data = await response.json();
 
     vehicleCount.textContent = data.vehicle_count;
-    
+
     congestionLevel.textContent = data.congestion;
     congestionLevel.className = "";
 
@@ -50,6 +67,7 @@ async function fetchTrafficData() {
 
     activeSignal.textContent = data.active_signal;
     aiMessage.textContent = data.ai_message;
+    addLog(data.ai_message);
     predictionText.textContent = data.prediction;
     northCount.textContent = data.north_lane;
     eastCount.textContent = data.east_lane;
@@ -70,8 +88,6 @@ emergencyBtn.addEventListener("click", () => {
 
     activeSignal.textContent = "Emergency Route Active";
 });
-
-const ctx = document.getElementById("trafficChart");
 
 const trafficChart = new Chart(ctx, {
     type: "line",
