@@ -3,22 +3,20 @@ const congestionLevel = document.getElementById("congestion-level");
 const activeSignal = document.getElementById("active-signal");
 const aiMessage = document.getElementById("ai-message");
 const emergencyStatus = document.getElementById("emergency-status");
+const predictionText = document.getElementById("prediction");
 
 const emergencyBtn = document.getElementById("emergency-btn");
 
 async function fetchTrafficData() {
 
     const response = await fetch("/api/traffic-data");
-
     const data = await response.json();
 
     vehicleCount.textContent = data.vehicle_count;
-
     congestionLevel.textContent = data.congestion;
-
     activeSignal.textContent = data.active_signal;
-
     aiMessage.textContent = data.ai_message;
+    predictionText.textContent = data.prediction;
 }
 
 setInterval(fetchTrafficData, 4000);
