@@ -58,6 +58,7 @@ header h1 {
     height: 40px;
     border-radius: 50%;
     opacity: 0.3;
+    transition: 0.3s ease;
 }
 
 .red {
