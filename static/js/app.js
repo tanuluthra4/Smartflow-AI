@@ -21,16 +21,29 @@ const emergencyBtn = document.getElementById("emergency-btn");
 
 function addLog(message) {
 
-    const logItem = document.createElement("li");
+    const logContainer =
+        document.getElementById("activity-log");
 
-    const currentTime = new Date().toLocaleTimeString();
+    const logEntry =
+        document.createElement("div");
 
-    logItem.textContent = `[${currentTime}] ${message}`;
+    logEntry.classList.add("log-entry");
 
-    activityLog.prepend(logItem);
+    const now = new Date();
 
-    if (activityLog.children.length > 6) {
-        activityLog.removeChild(activityLog.lastChild);
+    const time =
+        now.toLocaleTimeString();
+
+    logEntry.innerText =
+        `[${time}] ${message}`;
+
+    logContainer.prepend(logEntry);
+
+    if (logContainer.children.length > 8) {
+
+        logContainer.removeChild(
+            logContainer.lastChild
+        );
     }
 }
 
