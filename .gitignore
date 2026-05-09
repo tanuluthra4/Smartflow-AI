@@ -12,3 +12,4 @@ database/traffic.db
 .vscode/
 
 .DS_Store
+instance/
