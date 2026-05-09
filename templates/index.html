@@ -95,6 +95,11 @@
         </section>
 
         <section class="card">
+        <h2>Congestion Level</h2>
+        <p id="congestion-level" class="medium">Medium</p>
+        </section>
+
+        <section class="card">
             <h2>Average Wait Time</h2>
             <p id="wait-time">12 sec</p>
         </section>
@@ -105,11 +110,6 @@
         </section>
 
         <section class="card">
-            <h2>Congestion Level</h2>
-            <p id="congestion-level" class="medium">Medium</p>
-        </section>
-
-        <section class="card">
             <h2>Emergency Status</h2>
             <p id="emergency-status">No Emergency</p>
         </section>
@@ -117,6 +117,28 @@
         <section class="card">
             <h2>Active Signal</h2>
             <p id="active-signal">North Lane</p>
+        </section>
+
+        <section class="card">
+            <h2>Traffic Prediction</h2>
+            <p id="prediction">
+                Congestion expected to increase in 10 minutes.
+            </p>
+        </section>
+
+        <section class="card">
+            <h2>AI Traffic Alerts</h2>
+
+            <div id="traffic-alert">
+                No critical alerts detected.
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>AI Recommendation</h2>
+            <p id="ai-message">
+                Increase green signal duration for North Lane.
+            </p>
         </section>
 
         <section class="junction card">
@@ -170,20 +192,6 @@
         </section>
 
         <section class="card">
-            <h2>AI Recommendation</h2>
-            <p id="ai-message">
-                Increase green signal duration for North Lane.
-            </p>
-        </section>
-
-        <section class="card">
-            <h2>Traffic Prediction</h2>
-            <p id="prediction">
-                Congestion expected to increase in 10 minutes.
-            </p>
-        </section>
-
-        <section class="card">
             <h2>Traffic Analytics</h2>
             <canvas id="trafficChart"></canvas>
         </section>
@@ -194,14 +202,6 @@
             <ul id="activity-log">
                 <li>System initialized.</li>
             </ul>
-        </section>
-
-        <section class="card">
-            <h2>AI Traffic Alerts</h2>
-
-            <div id="traffic-alert">
-                No critical alerts detected.
-            </div>
         </section>
 
     </main>
