@@ -1,59 +1,36 @@
-const redSignal = document.querySelector(".red");
-const yellowSignal = document.querySelector(".yellow");
-const greenSignal = document.querySelector(".green");
-
-const activeSignalText = document.getElementById("active-signal");
-const emergencyStatus = document.getElementById("emergency-status");
+const vehicleCount = document.getElementById("vehicle-count");
+const congestionLevel = document.getElementById("congestion-level");
+const activeSignal = document.getElementById("active-signal");
 const aiMessage = document.getElementById("ai-message");
+const emergencyStatus = document.getElementById("emergency-status");
 
 const emergencyBtn = document.getElementById("emergency-btn");
 
-let currentLane = "North Lane";
+async function fetchTrafficData() {
 
-function resetSignals() {
-    redSignal.classList.remove("active");
-    yellowSignal.classList.remove("active");
-    greenSignal.classList.remove("active");
+    const response = await fetch("/api/traffic-data");
+
+    const data = await response.json();
+
+    vehicleCount.textContent = data.vehicle_count;
+
+    congestionLevel.textContent = data.congestion;
+
+    activeSignal.textContent = data.active_signal;
+
+    aiMessage.textContent = data.ai_message;
 }
 
-function switchSignal() {
+setInterval(fetchTrafficData, 4000);
 
-    resetSignals();
-
-    if (currentLane === "North Lane") {
-        greenSignal.classList.add("active");
-
-        activeSignalText.textContent = "North Lane";
-        aiMessage.textContent =
-            "AI increased green signal duration for North Lane due to higher congestion.";
-
-        currentLane = "East Lane";
-
-    } else {
-
-        yellowSignal.classList.add("active");
-
-        activeSignalText.textContent = "East Lane";
-        aiMessage.textContent =
-            "Traffic flow balanced for East Lane.";
-
-        currentLane = "North Lane";
-    }
-}
-
-setInterval(switchSignal, 4000);
+fetchTrafficData();
 
 emergencyBtn.addEventListener("click", () => {
 
-    resetSignals();
-
-    greenSignal.classList.add("active");
-
     emergencyStatus.textContent = "Ambulance Detected";
 
-    activeSignalText.textContent = "Emergency Corridor Active";
-
     aiMessage.textContent =
-        "Emergency vehicle detected. AI activated priority green corridor.";
+        "Emergency vehicle detected. AI activated green corridor priority.";
 
+    activeSignal.textContent = "Emergency Route Active";
 });
