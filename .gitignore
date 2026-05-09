@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+venv/
+env/
+
+database/traffic.db
+
+.idea/
+.vscode/
+
+.DS_Store

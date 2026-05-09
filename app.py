@@ -1,9 +1,11 @@
 from flask import Flask, render_template, jsonify
+from database.db import create_table, insert_log
 import random
 
 emergency_mode = False
 
 app = Flask(__name__)
+create_table()
 
 @app.route("/")
 def home():
@@ -72,6 +74,8 @@ def traffic_data():
         "west_lane": west_lane,
         "ai_message": ai_message,
     }
+
+    insert_log(vehicle_count, congestion, active_signal)
 
     return jsonify(response)
 
