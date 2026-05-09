@@ -32,6 +32,32 @@ def traffic_data():
         "West Lane": west_lane
     }
 
+    max_density = max(
+        north_lane,
+        east_lane,
+        south_lane,
+        west_lane
+    )
+
+    if max_density > 70:
+
+        traffic_alert = (
+            "Critical congestion detected. "
+            "AI recommends immediate traffic diversion."
+        )
+
+    elif max_density > 50:
+
+            traffic_alert = (
+                "Heavy traffic building up at junction."
+            )
+
+    else:
+
+        traffic_alert = (
+            "Traffic conditions are stable."
+        )
+
     active_signal = max(lane_data, key=lane_data.get)
 
     highest_density = lane_data[active_signal]
@@ -76,7 +102,8 @@ def traffic_data():
         "ai_message": ai_message,
         "green_time": green_time,
         "wait_time": wait_time,
-        "traffic_efficiency": traffic_efficiency
+        "traffic_efficiency": traffic_efficiency,
+        "traffic_alert": traffic_alert
     }
 
     insert_log(vehicle_count, congestion, active_signal)

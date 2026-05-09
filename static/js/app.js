@@ -13,6 +13,7 @@ const ctx = document.getElementById("trafficChart");
 const signalTimer = document.getElementById("signal-timer");
 const waitTime = document.getElementById("wait-time");
 const trafficEfficiency = document.getElementById("traffic-efficiency");
+const trafficAlert = document.getElementById("traffic-alert");
 
 const emergencyBtn = document.getElementById("emergency-btn");
 
@@ -79,6 +80,7 @@ async function fetchTrafficData() {
     westCount.textContent = data.west_lane;
     waitTime.textContent = `${data.wait_time} sec`;
     trafficEfficiency.textContent = `${data.traffic_efficiency}%`;
+    trafficAlert.textContent = data.traffic_alert;
 }
 
 setInterval(fetchTrafficData, 4000);
