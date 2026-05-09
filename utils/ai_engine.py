@@ -1,13 +1,22 @@
-import random
+def generate_ai_decision(lane_data):
 
-def generate_ai_recommendation(congestion):
-    
-    recommendations = [
-        f"Increase green signal duration for {congestion}.",
-        f"Heavy traffic detected near {congestion}.",
-        f"Optimize lane switching for {congestion}.",
-        f"Emergency priority activated for {congestion}.",
-        f"Traffic expected to rise near {congestion}."
-    ]
+    highest_lane = max(
+        lane_data,
+        key=lane_data.get
+    )
 
-    return random.choice(recommendations)
+    highest_count = lane_data[highest_lane]
+
+    recommendation = (
+        f"{highest_lane} has the highest "
+        f"traffic density with "
+        f"{highest_count} vehicles. "
+        f"AI increased green signal duration "
+        f"to optimize traffic flow."
+    )
+
+    return {
+        "active_lane": highest_lane,
+        "vehicle_count": highest_count,
+        "recommendation": recommendation
+    }

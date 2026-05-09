@@ -1,5 +1,6 @@
 from flask import Flask, render_template, jsonify
 from database.db import create_table, insert_log
+from utils.ai_engine import generate_ai_decision
 import random
 
 emergency_mode = False
@@ -65,11 +66,7 @@ def traffic_data():
     wait_time = max(5, 60 - (green_time // 2))
     traffic_efficiency = min(98, 50 + (green_time // 2))
 
-    ai_message = (
-        f"AI increased green signal duration for "
-        f"{active_signal} due to high traffic density "
-        f"({highest_density} vehicles)."
-    )
+    decision = generate_ai_decision(lane_data)
 
     predictions = [
         "Heavy congestion expected in 10 minutes.",
@@ -85,10 +82,9 @@ def traffic_data():
 
         active_signal = "Emergency Route"
 
-        ai_message = (
-            "Emergency vehicle detected. "
-            "AI activated green corridor priority."
-        )
+        decision = generate_ai_decision(lane_data)
+
+    ai_message = decision["recommendation"]
 
     response = {
         "vehicle_count": vehicle_count,
