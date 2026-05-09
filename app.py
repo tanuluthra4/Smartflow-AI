@@ -66,23 +66,42 @@ def traffic_data():
     wait_time = max(5, 60 - (green_time // 2))
     traffic_efficiency = min(98, 50 + (green_time // 2))
 
-    decision = generate_ai_decision(lane_data)
+    prediction_data = {}
 
-    predictions = [
-        "Heavy congestion expected in 10 minutes.",
-        "Traffic flow likely to improve shortly.",
-        "Peak traffic detected near East Lane.",
-        "Moderate congestion predicted ahead.",
-        "Emergency route remains clear."
-    ]
+    for lane in lane_data:
+        change = random.randint(-10, 20)
 
-    prediction = random.choice(predictions)
+        trend = (
+            "increase"
+            if change >= 0
+            else "decrease"
+        )
+
+        prediction_data[lane] = {
+            "change": change,
+            "trend": trend
+        }
+
+    decision = generate_ai_decision(lane_data, prediction_data)
+
+    if trend == "increase":
+
+        prediction_text = (
+            f"Traffic expected to increase "
+            f"by {change} vehicles."
+        )
+
+    else:
+        prediction_text = (
+            f"Traffic expected to reduce "
+            f"by {abs(change)} vehicles."
+        )
 
     if emergency_mode:
 
         active_signal = "Emergency Route"
 
-        decision = generate_ai_decision(lane_data)
+        decision = generate_ai_decision(lane_data, prediction_data)
 
     ai_message = decision["recommendation"]
 
@@ -90,7 +109,7 @@ def traffic_data():
         "vehicle_count": vehicle_count,
         "congestion": congestion,
         "active_signal": active_signal,
-        "prediction": prediction,
+        "prediction": prediction_text,
         "north_lane": north_lane,
         "east_lane": east_lane,
         "south_lane": south_lane,

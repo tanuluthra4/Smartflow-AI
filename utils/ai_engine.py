@@ -1,22 +1,50 @@
-def generate_ai_decision(lane_data):
+def generate_ai_decision(
+    lane_data,
+    prediction_data
+):
 
-    highest_lane = max(
-        lane_data,
-        key=lane_data.get
+    adjusted_scores = {}
+
+    for lane in lane_data:
+
+        adjusted_scores[lane] = (
+            lane_data[lane]
+            +
+            max(prediction_data[lane]["change"], 0)
+        )
+
+    best_lane = max(
+        adjusted_scores,
+        key=adjusted_scores.get
     )
 
-    highest_count = lane_data[highest_lane]
+    prediction_change = prediction_data[best_lane]["change"]
+
+    if prediction_change > 0:
+
+        prediction_text = (
+            f"traffic is expected to increase "
+            f"by {prediction_change} vehicles"
+        )
+
+    else:
+
+        prediction_text = (
+            "traffic flow is expected "
+            "to stabilize"
+        )
 
     recommendation = (
-        f"{highest_lane} has the highest "
-        f"traffic density with "
-        f"{highest_count} vehicles. "
-        f"AI increased green signal duration "
-        f"to optimize traffic flow."
+
+        f"{best_lane} selected because "
+        f"current traffic density is highest and "
+        f"{prediction_text}. "
+        f"AI optimization score: "
+        f"{adjusted_scores[best_lane]}."
     )
 
     return {
-        "active_lane": highest_lane,
-        "vehicle_count": highest_count,
-        "recommendation": recommendation
+        "active_lane": best_lane,
+        "recommendation": recommendation,
+        "score": adjusted_scores[best_lane]
     }
