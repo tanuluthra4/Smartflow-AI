@@ -78,133 +78,140 @@
 
     </section>
 
-    <main class="dashboard">
+    <main class="control-center">
 
-        <section class="card">
-            <h2>Lane Traffic Density</h2>
+        <div class="left-panel">
 
-            <p>North Lane: <span id="north-count">0</span></p>
-            <p>East Lane: <span id="east-count">0</span></p>
-            <p>South Lane: <span id="south-count">0</span></p>
-            <p>West Lane: <span id="west-count">0</span></p>
-        </section>
+            <section class="card">
+                <h2>Lane Traffic Density</h2>
 
-        <section class="card">
-            <h2>Total Vehicles</h2>
-            <p id="vehicle-count">124</p>
-        </section>
+                <p>North Lane: <span id="north-count">0</span></p>
+                <p>East Lane: <span id="east-count">0</span></p>
+                <p>South Lane: <span id="south-count">0</span></p>
+                <p>West Lane: <span id="west-count">0</span></p>
+            </section>
 
-        <section class="card">
-        <h2>Congestion Level</h2>
-        <p id="congestion-level" class="medium">Medium</p>
-        </section>
+            <section class="card">
+                <h2>Total Vehicles</h2>
+                <p id="vehicle-count">124</p>
+            </section>
 
-        <section class="card">
-            <h2>Average Wait Time</h2>
-            <p id="wait-time">12 sec</p>
-        </section>
+            <section class="card">
+                <h2>Congestion Level</h2>
+                <p id="congestion-level" class="medium">Medium</p>
+            </section>
 
-        <section class="card">
-            <h2>Traffic Flow Efficiency</h2>
-            <p id="traffic-efficiency">82%</p>
-        </section>
+            <section class="card">
+                <h2>Average Wait Time</h2>
+                <p id="wait-time">12 sec</p>
+            </section>
 
-        <section class="card">
-            <h2>Emergency Status</h2>
-            <p id="emergency-status">No Emergency</p>
-        </section>
+            <section class="card">
+                <h2>Traffic Flow Efficiency</h2>
+                <p id="traffic-efficiency">82%</p>
+            </section>
+        </div>
 
-        <section class="card">
-            <h2>Active Signal</h2>
-            <p id="active-signal">North Lane</p>
-        </section>
+        <div class="center-panel">
+            <section class="card">
+                <h2>Traffic Prediction</h2>
+                <p id="prediction">
+                    Congestion expected to increase in 10 minutes.
+                </p>
+            </section>
 
-        <section class="card">
-            <h2>Traffic Prediction</h2>
-            <p id="prediction">
-                Congestion expected to increase in 10 minutes.
-            </p>
-        </section>
+            <section class="card">
+                <h2>AI Traffic Alerts</h2>
 
-        <section class="card">
-            <h2>AI Traffic Alerts</h2>
+                <div id="traffic-alert">
+                    No critical alerts detected.
+                </div>
+            </section>
 
-            <div id="traffic-alert">
-                No critical alerts detected.
-            </div>
-        </section>
+            <section class="card">
+                <h2>AI Recommendation</h2>
+                <p id="ai-message">
+                    Increase green signal duration for North Lane.
+                </p>
+            </section>
 
-        <section class="card">
-            <h2>AI Recommendation</h2>
-            <p id="ai-message">
-                Increase green signal duration for North Lane.
-            </p>
-        </section>
+            <section class="junction card junction-main">
 
-        <section class="junction card junction-main">
+                <h2>Smart Traffic Junction</h2>
 
-            <h2>Smart Traffic Junction</h2>
+                <div class="intersection">
 
-            <div class="intersection">
-
-                <div class="road vertical"></div>
-                <div class="road horizontal"></div>
+                    <div class="road vertical"></div>
+                    <div class="road horizontal"></div>
 
 
-                <div class="car north-car"></div>
-                <div class="car east-car"></div>
-                <div class="car south-car"></div>
-                <div class="car west-car"></div>
+                    <div class="car north-car"></div>
+                    <div class="car east-car"></div>
+                    <div class="car south-car"></div>
+                    <div class="car west-car"></div>
 
-                <div class="ambulance" id="ambulance"></div>
+                    <div class="ambulance" id="ambulance"></div>
 
-                <div class="signal-box north">
-                    <div class="light red-light"></div>
+                    <div class="signal-box north">
+                        <div class="light red-light"></div>
+                    </div>
+
+                    <div class="signal-box east">
+                        <div class="light yellow-light"></div>
+                    </div>
+
+                    <div class="signal-box south">
+                        <div class="light green-light active-light"></div>
+                    </div>
+
+                    <div class="signal-box west">
+                        <div class="light red-light"></div>
+                    </div>
+
                 </div>
 
-                <div class="signal-box east">
-                    <div class="light yellow-light"></div>
-                </div>
+                <h3 id="signal-timer">Green Signal Time: 30s</h3>
 
-                <div class="signal-box south">
-                    <div class="light green-light active-light"></div>
-                </div>
+                <select id="emergency-lane">
+                    <option value="North Lane">North Lane</option>
+                    <option value="East Lane">East Lane</option>
+                    <option value="South Lane">South Lane</option>
+                    <option value="West Lane">West Lane</option>
+                </select>
 
-                <div class="signal-box west">
-                    <div class="light red-light"></div>
-                </div>
+                <button id="emergency-btn">
+                    Trigger Ambulance Priority
+                </button>
+            </section>
 
-            </div>
+        </div>
 
-            <h3 id="signal-timer">Green Signal Time: 30s</h3>
+        <div class="right-panel">
+            <section class="card">
+                <h2>Emergency Status</h2>
+                <p id="emergency-status">No Emergency</p>
+            </section>
 
-            <select id="emergency-lane">
-                <option value="North Lane">North Lane</option>
-                <option value="East Lane">East Lane</option>
-                <option value="South Lane">South Lane</option>
-                <option value="West Lane">West Lane</option>
-            </select>
+            <section class="card">
+                <h2>Active Signal</h2>
+                <p id="active-signal">North Lane</p>
+            </section>
 
-            <button id="emergency-btn">
-                Trigger Ambulance Priority
-            </button>
+            <section class="card">
+                <h2>System Activity Log</h2>
 
-        </section>
-
-        <section class="card">
-            <h2>Traffic Analytics</h2>
-            <canvas id="trafficChart"></canvas>
-        </section>
-
-        <section class="card">
-            <h2>System Activity Log</h2>
-
-            <ul id="activity-log">
-                <li>System initialized.</li>
-            </ul>
-        </section>
+                <ul id="activity-log">
+                    <li>System initialized.</li>
+                </ul>
+            </section>
+        </div>
 
     </main>
+
+    <section class="card">
+        <h2>Traffic Analytics</h2>
+        <canvas id="trafficChart"></canvas>
+    </section>
 
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 

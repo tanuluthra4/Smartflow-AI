@@ -36,22 +36,33 @@ body {
     margin: auto;
 }
 
-.dashboard {
+.control-center {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: 1fr 1.4fr 1fr;
     gap: 24px;
-    align-items: start;
+    margin-top: 30px;
 }
 
-.dashboard-section {
-    margin-bottom: 42px;
+.left-panel,
+.center-panel,
+.right-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.center-panel .card {
+    min-height: auto;
+}
+
+.left-panel .card,
+.right-panel .card {
+    min-height: 120px;
 }
 
 .section-title {
     font-size: 28px;
-
     margin-bottom: 22px;
-
     color: #e2e8f0;
 }
 
@@ -85,7 +96,8 @@ body {
 }
 
 .junction-main {
-    grid-column: span 2;
+    padding: 30px;
+    min-height: 700px;
 }
 
 .signals {
