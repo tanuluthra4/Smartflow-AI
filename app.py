@@ -20,8 +20,6 @@ def traffic_data():
     congestion_levels = ["Low", "Medium", "High"]
     congestion = random.choice(congestion_levels)
 
-    signals = ["North Lane", "East Lane", "South Lane", "West Lane"]
-
     north_lane = random.randint(10, 80)
     east_lane = random.randint(10, 80)
     south_lane = random.randint(10, 80)

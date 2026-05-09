@@ -34,7 +34,20 @@ async function fetchTrafficData() {
     const data = await response.json();
 
     vehicleCount.textContent = data.vehicle_count;
+    
     congestionLevel.textContent = data.congestion;
+    congestionLevel.className = "";
+
+    if (data.congestion === "Low") {
+        congestionLevel.classList.add("low");
+
+    } else if (data.congestion === "Medium") {
+        congestionLevel.classList.add("medium");
+
+    } else {
+        congestionLevel.classList.add("high");
+    }
+
     activeSignal.textContent = data.active_signal;
     aiMessage.textContent = data.ai_message;
     predictionText.textContent = data.prediction;

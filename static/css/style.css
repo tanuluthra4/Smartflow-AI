@@ -73,6 +73,21 @@ header h1 {
     background: lime;
 }
 
+.low {
+    color: lime;
+    font-weight: bold;
+}
+
+.medium {
+    color: orange;
+    font-weight: bold;
+}
+
+.high {
+    color: red;
+    font-weight: bold;
+}
+
 .active {
     opacity: 1;
 }
