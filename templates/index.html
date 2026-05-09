@@ -59,12 +59,30 @@
         </section>
 
         <section class="junction card">
-            <h2>Traffic Junction</h2>
 
-            <div class="signals">
-                <div class="signal red"></div>
-                <div class="signal yellow"></div>
-                <div class="signal green active"></div>
+            <h2>Smart Traffic Junction</h2>
+
+            <div class="intersection">
+
+                <div class="road vertical"></div>
+                <div class="road horizontal"></div>
+
+                <div class="signal-box north">
+                    <div class="light red-light"></div>
+                </div>
+
+                <div class="signal-box east">
+                    <div class="light yellow-light"></div>
+                </div>
+
+                <div class="signal-box south">
+                    <div class="light green-light active-light"></div>
+                </div>
+
+                <div class="signal-box west">
+                    <div class="light red-light"></div>
+                </div>
+
             </div>
 
             <h3 id="signal-timer">Green Signal Time: 30s</h3>
@@ -72,6 +90,7 @@
             <button id="emergency-btn">
                 Trigger Ambulance Priority
             </button>
+
         </section>
 
         <section class="card">

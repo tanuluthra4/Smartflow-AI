@@ -122,3 +122,83 @@ button {
     background: #475569;
     font-weight: bold;
 }
+
+.intersection {
+    position: relative;
+    width: 320px;
+    height: 320px;
+    margin: 20px auto;
+    background: #0f172a;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.road.vertical {
+    position: absolute;
+    width: 100px;
+    height: 100%;
+    background: #374151;
+    left: 110px;
+}
+
+.road.horizontal {
+    position: absolute;
+    width: 100%;
+    height: 100px;
+    background: #374151;
+    top: 110px;
+}
+
+.signal-box {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background: #1e293b;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.north {
+    top: 20px;
+    left: 140px;
+}
+
+.east {
+    top: 140px;
+    right: 20px;
+}
+
+.south {
+    bottom: 20px;
+    left: 140px;
+}
+
+.west {
+    top: 140px;
+    left: 20px;
+}
+
+.light {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    opacity: 0.3;
+}
+
+.red-light {
+    background: red;
+}
+
+.yellow-light {
+    background: yellow;
+}
+
+.green-light {
+    background: lime;
+}
+
+.active-light {
+    opacity: 1;
+}
