@@ -11,6 +11,8 @@ const westCount = document.getElementById("west-count");
 const activityLog = document.getElementById("activity-log");
 const ctx = document.getElementById("trafficChart");
 const signalTimer = document.getElementById("signal-timer");
+const waitTime = document.getElementById("wait-time");
+const trafficEfficiency = document.getElementById("traffic-efficiency");
 
 const emergencyBtn = document.getElementById("emergency-btn");
 
@@ -68,14 +70,15 @@ async function fetchTrafficData() {
 
     activeSignal.textContent = data.active_signal;
     aiMessage.textContent = data.ai_message;
+    signalTimer.textContent = `Green Signal Time: ${data.green_time}s`;
     addLog(data.ai_message);
     predictionText.textContent = data.prediction;
     northCount.textContent = data.north_lane;
     eastCount.textContent = data.east_lane;
     southCount.textContent = data.south_lane;
     westCount.textContent = data.west_lane;
-    signalTimer.textContent =
-        `Green Signal Time: ${data.green_time}s`;
+    waitTime.textContent = `${data.wait_time} sec`;
+    trafficEfficiency.textContent = `${data.traffic_efficiency}%`;
 }
 
 setInterval(fetchTrafficData, 4000);

@@ -36,6 +36,8 @@ def traffic_data():
 
     highest_density = lane_data[active_signal]
     green_time = 20 + (highest_density // 2)
+    wait_time = max(5, 60 - (green_time // 2))
+    traffic_efficiency = min(98, 50 + (green_time // 2))
 
     ai_message = (
         f"AI increased green signal duration for "
@@ -73,6 +75,8 @@ def traffic_data():
         "west_lane": west_lane,
         "ai_message": ai_message,
         "green_time": green_time,
+        "wait_time": wait_time,
+        "traffic_efficiency": traffic_efficiency
     }
 
     insert_log(vehicle_count, congestion, active_signal)
