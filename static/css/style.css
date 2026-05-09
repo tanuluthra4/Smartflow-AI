@@ -473,6 +473,12 @@ body {
 .signal-light.yellow.active { box-shadow: 0 0 10px rgba(255,176,32,0.8); }
 .signal-light.green.active  { box-shadow: 0 0 10px rgba(0,255,136,0.8); }
 
+.active-light {
+    box-shadow:
+        0 0 20px currentColor,
+        0 0 40px currentColor;
+}
+
 .signal-label {
     font-size: 9px;
     font-weight: 700;
@@ -487,8 +493,12 @@ body {
 
 /* ── CARS ── */
 .car {
+    width: 18px;
+    height: 34px;
+    border-radius: 6px;
     position: absolute;
-    border-radius: 3px;
+    box-shadow:0 0 12px rgba(59,130,246,0.8);
+    animation:trafficPulse 1.8s infinite alternate;
     z-index: 5;
 }
 
@@ -533,6 +543,17 @@ body {
     animation-delay: -3s;
 }
 
+@keyframes trafficPulse {
+    from {
+        transform: scale(1);
+        opacity: 0.7;
+    }
+    to {
+        transform: scale(1.08);
+        opacity: 1;
+    }
+}
+
 @keyframes moveDown  { from { top: -40px; } to { top: 400px; } }
 @keyframes moveUp    { from { bottom: -40px; } to { bottom: 400px; } }
 @keyframes moveLeft  { from { right: -40px; } to { right: 400px; } }
@@ -547,6 +568,7 @@ body {
     top: -60px;
     display: none;
     z-index: 15;
+    animation: ambulanceFlash 0.5s infinite alternate;
 }
 
 .ambulance.active {
@@ -591,6 +613,17 @@ body {
 @keyframes flashRed  { from { opacity: 1; } to { opacity: 0.2; } }
 @keyframes flashBlue { from { opacity: 0.2; } to { opacity: 1; } }
 @keyframes ambMove   { from { top: -60px; } to { top: 420px; } }
+
+@keyframes ambulanceFlash {
+    from {
+        box-shadow:
+            0 0 8px #ef4444;
+    }
+    to {
+        box-shadow:
+            0 0 24px #ffffff;
+    }
+}
 
 /* ── DENSITY BADGES ── */
 .density-badge {
