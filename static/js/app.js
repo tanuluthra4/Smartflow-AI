@@ -1,24 +1,24 @@
 // ── SmartFlow AI — Frontend Controller ──
 
 // DOM References
-const vehicleCountEl    = document.getElementById("vehicle-count");
+const vehicleCountEl = document.getElementById("vehicle-count");
 const congestionLevelEl = document.getElementById("congestion-level");
-const activeSignalEl    = document.getElementById("active-signal");
-const signalTimerEl     = document.getElementById("signal-timer");
-const predictionEl      = document.getElementById("prediction");
-const trafficAlertEl    = document.getElementById("traffic-alert");
-const aiMessageEl       = document.getElementById("ai-message");
-const emergencyBanner   = document.getElementById("emergency-banner");
+const activeSignalEl = document.getElementById("active-signal");
+const signalTimerEl = document.getElementById("signal-timer");
+const predictionEl = document.getElementById("prediction");
+const trafficAlertEl = document.getElementById("traffic-alert");
+const aiMessageEl = document.getElementById("ai-message");
+const emergencyBanner = document.getElementById("emergency-banner");
 const emergencyBannerTx = document.getElementById("emergency-banner-text");
-const junctionStateTag  = document.getElementById("junction-state-tag");
-const emergencyBtn      = document.getElementById("emergency-btn");
-const emergencyLaneSel  = document.getElementById("emergency-lane");
-const activityLogEl     = document.getElementById("activity-log");
-const activityCountEl   = document.getElementById("activity-count");
-const ambulanceEl       = document.getElementById("ambulance");
+const junctionStateTag = document.getElementById("junction-state-tag");
+const emergencyBtn = document.getElementById("emergency-btn");
+const emergencyLaneSel = document.getElementById("emergency-lane");
+const activityLogEl = document.getElementById("activity-log");
+const activityCountEl = document.getElementById("activity-count");
+const ambulanceEl = document.getElementById("ambulance");
 const efficiencyDisplay = document.getElementById("efficiency-display");
-const waitDisplay       = document.getElementById("wait-display");
-const cycleCountEl      = document.getElementById("cycle-count");
+const waitDisplay = document.getElementById("wait-display");
+const cycleCountEl = document.getElementById("cycle-count");
 
 // Lane elements
 const lanes = {
@@ -71,7 +71,7 @@ const lanes = {
 // Chart Setup
 const ctx = document.getElementById("trafficChart");
 const chartLabels = [];
-const chartData   = [];
+const chartData = [];
 
 const trafficChart = new Chart(ctx, {
     type: "line",
@@ -120,7 +120,7 @@ function addLog(message, type = "info") {
     const entry = document.createElement("div");
     entry.classList.add("log-entry");
     if (type === "emergency") entry.classList.add("emergency");
-    if (type === "warning")   entry.classList.add("warning");
+    if (type === "warning") entry.classList.add("warning");
 
     const now = new Date().toLocaleTimeString("en-IN", { hour12: false });
 
@@ -160,9 +160,9 @@ function setSignalLights(laneName, color) {
     yellow.classList.remove("active");
     green.classList.remove("active");
 
-    if (color === "green")  green.classList.add("active");
+    if (color === "green") green.classList.add("active");
     if (color === "yellow") yellow.classList.add("active");
-    if (color === "red")    red.classList.add("active");
+    if (color === "red") red.classList.add("active");
 }
 
 // Update all 4 signal lights based on active signal
@@ -188,7 +188,7 @@ function updateLane(laneName, count, status) {
     if (!el) return;
 
     el.count.textContent = count;
-    el.bar.style.width   = `${Math.min(count, 80) / 80 * 100}%`;
+    el.bar.style.width = `${Math.min(count, 80) / 80 * 100}%`;
     el.badge.textContent = count;
 
     const statusMap = { critical: "Critical density", moderate: "Moderate load", clear: "Clear" };
@@ -215,7 +215,7 @@ emergencyBtn.addEventListener("click", async () => {
     const lane = emergencyLaneSel.value;
 
     try {
-        const res  = await fetch(`/api/emergency/${encodeURIComponent(lane)}`, { method: "POST" });
+        const res = await fetch(`/api/emergency/${encodeURIComponent(lane)}`, { method: "POST" });
         const data = await res.json();
 
         emergencyActive = data.emergency_mode;
@@ -250,26 +250,26 @@ emergencyBtn.addEventListener("click", async () => {
 // ── MAIN TRAFFIC POLLING ──
 async function fetchTrafficData() {
     try {
-        const res  = await fetch("/api/traffic-data");
+        const res = await fetch("/api/traffic-data");
         const data = await res.json();
 
         // Top metrics
         vehicleCountEl.textContent = data.vehicle_count;
-        cycleCountEl.textContent   = `#${data.cycle_count}`;
+        cycleCountEl.textContent = `#${data.cycle_count}`;
         efficiencyDisplay.textContent = `${data.traffic_efficiency}%`;
-        waitDisplay.textContent       = `${data.wait_time}s`;
-        signalTimerEl.textContent     = `${data.green_time}s`;
+        waitDisplay.textContent = `${data.wait_time}s`;
+        signalTimerEl.textContent = `${data.green_time}s`;
 
         // Congestion badge
         congestionLevelEl.textContent = data.congestion;
-        congestionLevelEl.className   = "metric-value " + data.congestion.toLowerCase();
+        congestionLevelEl.className = "metric-value " + data.congestion.toLowerCase();
 
         // Active signal
         activeSignalEl.textContent = data.active_signal;
 
         // Prediction + alert
-        predictionEl.textContent    = data.prediction;
-        trafficAlertEl.textContent  = data.traffic_alert;
+        predictionEl.textContent = data.prediction;
+        trafficAlertEl.textContent = data.traffic_alert;
 
         // Style alert card
         const alertCard = document.getElementById("alert-card");
@@ -283,9 +283,9 @@ async function fetchTrafficData() {
         // Lane data
         const laneMap = {
             "North Lane": { count: data.north_lane, status: data.congestion_breakdown?.["North Lane"] || "clear" },
-            "East Lane":  { count: data.east_lane,  status: data.congestion_breakdown?.["East Lane"]  || "clear" },
+            "East Lane": { count: data.east_lane, status: data.congestion_breakdown?.["East Lane"] || "clear" },
             "South Lane": { count: data.south_lane, status: data.congestion_breakdown?.["South Lane"] || "clear" },
-            "West Lane":  { count: data.west_lane,  status: data.congestion_breakdown?.["West Lane"]  || "clear" }
+            "West Lane": { count: data.west_lane, status: data.congestion_breakdown?.["West Lane"] || "clear" }
         };
 
         Object.entries(laneMap).forEach(([name, info]) => {

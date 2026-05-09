@@ -1,28 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SmartFlow AI — Adaptive Junction Intelligence</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
+
 <body>
- 
+
     <!-- TOPBAR -->
     <nav class="topbar">
         <div class="logo-area">
             <div class="logo-icon">
                 <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-                    <circle cx="14" cy="14" r="13" stroke="#00d4ff" stroke-width="1.5"/>
-                    <circle cx="14" cy="14" r="4" fill="#00d4ff"/>
-                    <line x1="14" y1="1" x2="14" y2="6" stroke="#00d4ff" stroke-width="1.5" stroke-linecap="round"/>
-                    <line x1="14" y1="22" x2="14" y2="27" stroke="#00d4ff" stroke-width="1.5" stroke-linecap="round"/>
-                    <line x1="1" y1="14" x2="6" y2="14" stroke="#00d4ff" stroke-width="1.5" stroke-linecap="round"/>
-                    <line x1="22" y1="14" x2="27" y2="14" stroke="#00d4ff" stroke-width="1.5" stroke-linecap="round"/>
+                    <circle cx="14" cy="14" r="13" stroke="#00d4ff" stroke-width="1.5" />
+                    <circle cx="14" cy="14" r="4" fill="#00d4ff" />
+                    <line x1="14" y1="1" x2="14" y2="6" stroke="#00d4ff" stroke-width="1.5" stroke-linecap="round" />
+                    <line x1="14" y1="22" x2="14" y2="27" stroke="#00d4ff" stroke-width="1.5" stroke-linecap="round" />
+                    <line x1="1" y1="14" x2="6" y2="14" stroke="#00d4ff" stroke-width="1.5" stroke-linecap="round" />
+                    <line x1="22" y1="14" x2="27" y2="14" stroke="#00d4ff" stroke-width="1.5" stroke-linecap="round" />
                 </svg>
             </div>
             <div>
@@ -51,21 +53,21 @@
             </div>
         </div>
     </nav>
- 
+
     <!-- EMERGENCY BANNER (hidden by default) -->
     <div class="emergency-banner" id="emergency-banner">
         <div class="emergency-icon">⚠</div>
         <span id="emergency-banner-text">EMERGENCY VEHICLE DETECTED — GREEN CORRIDOR ACTIVE</span>
         <div class="emergency-icon">⚠</div>
     </div>
- 
+
     <!-- MAIN GRID -->
     <main class="main-grid">
- 
+
         <!-- LEFT PANEL: Metrics + Lane Density -->
         <aside class="left-panel">
             <div class="panel-header">Junction Status</div>
- 
+
             <div class="metrics-grid">
                 <div class="metric-card">
                     <span class="metric-label">Vehicles</span>
@@ -76,17 +78,17 @@
                     <span class="metric-value" id="congestion-level">—</span>
                 </div>
             </div>
- 
+
             <div class="metric-card-wide">
                 <span class="metric-label">Active Signal</span>
                 <span class="metric-value-sm" id="active-signal">Initializing…</span>
             </div>
- 
+
             <div class="metric-card-wide">
                 <span class="metric-label">Green Time</span>
                 <span class="metric-value mono" id="signal-timer">—s</span>
             </div>
- 
+
             <!-- Lane Density Bars -->
             <div class="section-title">Lane Density</div>
             <div class="lane-bars">
@@ -96,7 +98,9 @@
                         <span class="lane-direction-label">North</span>
                         <span class="lane-count mono" id="north-count">0</span>
                     </div>
-                    <div class="bar-track"><div class="bar-fill north-bar" id="north-bar"></div></div>
+                    <div class="bar-track">
+                        <div class="bar-fill north-bar" id="north-bar"></div>
+                    </div>
                     <span class="lane-status" id="north-status"></span>
                 </div>
                 <div class="lane-item">
@@ -105,7 +109,9 @@
                         <span class="lane-direction-label">East</span>
                         <span class="lane-count mono" id="east-count">0</span>
                     </div>
-                    <div class="bar-track"><div class="bar-fill east-bar" id="east-bar"></div></div>
+                    <div class="bar-track">
+                        <div class="bar-fill east-bar" id="east-bar"></div>
+                    </div>
                     <span class="lane-status" id="east-status"></span>
                 </div>
                 <div class="lane-item">
@@ -114,7 +120,9 @@
                         <span class="lane-direction-label">South</span>
                         <span class="lane-count mono" id="south-count">0</span>
                     </div>
-                    <div class="bar-track"><div class="bar-fill south-bar" id="south-bar"></div></div>
+                    <div class="bar-track">
+                        <div class="bar-fill south-bar" id="south-bar"></div>
+                    </div>
                     <span class="lane-status" id="south-status"></span>
                 </div>
                 <div class="lane-item">
@@ -123,19 +131,21 @@
                         <span class="lane-direction-label">West</span>
                         <span class="lane-count mono" id="west-count">0</span>
                     </div>
-                    <div class="bar-track"><div class="bar-fill west-bar" id="west-bar"></div></div>
+                    <div class="bar-track">
+                        <div class="bar-fill west-bar" id="west-bar"></div>
+                    </div>
                     <span class="lane-status" id="west-status"></span>
                 </div>
             </div>
         </aside>
- 
+
         <!-- CENTER: Junction Visualization -->
         <section class="center-panel">
             <div class="junction-title">
                 <span>Live Traffic Junction</span>
                 <span class="junction-tag" id="junction-state-tag">ADAPTIVE MODE</span>
             </div>
- 
+
             <!-- THE JUNCTION -->
             <div class="junction-wrap">
                 <div class="intersection">
@@ -145,11 +155,13 @@
                     <!-- Center Box -->
                     <div class="junction-center">
                         <div class="junction-center-grid">
-                            <div class="grid-cell"></div><div class="grid-cell"></div>
-                            <div class="grid-cell"></div><div class="grid-cell"></div>
+                            <div class="grid-cell"></div>
+                            <div class="grid-cell"></div>
+                            <div class="grid-cell"></div>
+                            <div class="grid-cell"></div>
                         </div>
                     </div>
- 
+
                     <!-- Traffic Signals -->
                     <div class="signal-post north-signal" id="sig-north">
                         <div class="signal-body">
@@ -183,13 +195,13 @@
                         </div>
                         <div class="signal-label">W</div>
                     </div>
- 
+
                     <!-- Cars -->
                     <div class="car north-car" id="car-north"></div>
                     <div class="car east-car" id="car-east"></div>
                     <div class="car south-car" id="car-south"></div>
                     <div class="car west-car" id="car-west"></div>
- 
+
                     <!-- Ambulance -->
                     <div class="ambulance" id="ambulance">
                         <div class="amb-body">
@@ -200,7 +212,7 @@
                             <div class="amb-flash right-flash"></div>
                         </div>
                     </div>
- 
+
                     <!-- Density mini-labels -->
                     <div class="density-badge north-badge" id="badge-north">0</div>
                     <div class="density-badge east-badge" id="badge-east">0</div>
@@ -208,7 +220,7 @@
                     <div class="density-badge west-badge" id="badge-west">0</div>
                 </div>
             </div>
- 
+
             <!-- Emergency Controls -->
             <div class="controls-row">
                 <select id="emergency-lane" class="lane-select">
@@ -223,26 +235,26 @@
                 </button>
             </div>
         </section>
- 
+
         <!-- RIGHT PANEL: AI Feed + Chart -->
         <aside class="right-panel">
             <div class="panel-header">AI Intelligence Feed</div>
- 
+
             <div class="ai-card prediction-card">
                 <div class="ai-card-tag">Prediction</div>
                 <p id="prediction">Analyzing traffic patterns…</p>
             </div>
- 
+
             <div class="ai-card alert-card" id="alert-card">
                 <div class="ai-card-tag">Alert</div>
                 <p id="traffic-alert">System initializing…</p>
             </div>
- 
+
             <div class="ai-card recommendation-card">
                 <div class="ai-card-tag">AI Recommendation</div>
                 <p id="ai-message">Computing optimal signal allocation…</p>
             </div>
- 
+
             <!-- Live Chart -->
             <div class="chart-section">
                 <div class="chart-header">
@@ -256,9 +268,9 @@
                 </div>
             </div>
         </aside>
- 
+
     </main>
- 
+
     <!-- ACTIVITY FEED -->
     <section class="activity-section">
         <div class="activity-header">
@@ -267,8 +279,8 @@
         </div>
         <div id="activity-log"></div>
     </section>
- 
+
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>
+
 </html>
- 
