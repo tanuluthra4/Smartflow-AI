@@ -45,7 +45,7 @@ def insert_log(vehicle_count, congestion, active_signal,
     connection.commit()
     connection.close()
 
-def get_recent_logs(limit=20):
+def get_recent_logs(limit=50):
     connection = connect_db()
     cursor = connection.cursor()
     cursor.execute("""
@@ -67,3 +67,15 @@ def get_hourly_stats():
     rows = cursor.fetchall()
     connection.close()
     return [{"time": r["timestamp"][-8:-3], "count": r["vehicle_count"]} for r in reversed(rows)]
+
+def get_lane_history(lane_name, limit=20):
+    conn = connect_db()
+    cursor = conn.cursor()
+    cursor.execute(f"""
+        SELECT timestamp, {lane_name.lower().replace(' lane','_lane')}
+        FROM traffic_logs
+        ORDER BY id DESC LIMIT ?
+    """, (limit,))
+    rows = cursor.fetchall()
+    conn.close()
+    return [r[1] for r in reversed(rows)]

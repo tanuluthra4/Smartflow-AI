@@ -1,12 +1,20 @@
 from datetime import datetime
 
-
-def generate_ai_decision(lane_data, prediction_data):
+def generate_ai_decision(lane_data, prediction_data, history):
     # Adjusted score = current density + predicted incoming vehicles
     adjusted_scores = {}
     for lane in lane_data:
         predicted_increase = max(prediction_data[lane]["change"], 0)
         adjusted_scores[lane] = lane_data[lane] + predicted_increase
+
+    history_boost = {}
+    for lane in lane_data:
+        lane_hist = [r["vehicle_count"] for r in history if True]  
+        trend = sum(lane_hist[-5:]) - sum(lane_hist[:5]) if len(lane_hist) >= 10 else 0
+        history_boost[lane] = trend * 0.3
+        adjusted_scores[lane] += history_boost[lane]
+
+    adjusted_scores[lane] += generate_ai_decision.wait_counter[lane] * 0.8
 
     best_lane = max(adjusted_scores, key=adjusted_scores.get)
     score = adjusted_scores[best_lane]
@@ -90,6 +98,24 @@ def generate_ai_decision(lane_data, prediction_data):
             "severity": severity,
             "adjusted_score": adjusted_scores[lane]
         }
+
+    if not hasattr(generate_ai_decision, "wait_counter"):
+        generate_ai_decision.wait_counter = {}
+
+    for lane in lane_data:
+        generate_ai_decision.wait_counter.setdefault(lane, 0)
+
+    for lane in lane_data:
+        generate_ai_decision.wait_counter[lane] += 1
+        if lane == best_lane:
+            generate_ai_decision.wait_counter[lane] = 0
+        elif generate_ai_decision.wait_counter[lane] > 3:
+            recommendation += (
+                f" Note: {lane} has been waiting for "
+                f"{generate_ai_decision.wait_counter[lane]} cycles."
+            )
+
+    adjusted_scores[lane] += generate_ai_decision.wait_counter[lane] * 0.5
 
     return {
         "active_lane": best_lane,

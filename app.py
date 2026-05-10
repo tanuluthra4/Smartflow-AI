@@ -65,13 +65,20 @@ def traffic_data():
     # Prediction data per lane
     prediction_data = {}
     for lane in lane_data:
-        change = random.randint(-10, 20)
+        change = int((lane_data[lane] * 0.1) + random.randint(-5, 5))
         prediction_data[lane] = {
             "change": change,
             "trend":  "increase" if change >= 0 else "decrease"
         }
 
-    decision = generate_ai_decision(lane_data, prediction_data)
+    history = get_recent_logs(20)
+    decision = generate_ai_decision(lane_data, prediction_data, history)
+
+    for lane in lane_data:
+        if lane == decision["active_lane"]:
+            lane_data[lane] = max(5, lane_data[lane] - decision["green_time"] // 2)
+        else:
+            lane_data[lane] += 2  # accumulation effect
 
     if emergency_mode:
         active_signal = f"{emergency_lane_active} (Emergency)"
