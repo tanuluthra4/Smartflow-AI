@@ -1,26 +1,65 @@
 from datetime import datetime
 
+# GLOBAL STATE (FAIRNESS MEMORY)
+wait_counter = {}
+
+def clamp(x, min_v, max_v):
+    return max(min_v, min(max_v, x))
+
 def generate_ai_decision(lane_data, prediction_data, history):
-    # Adjusted score = current density + predicted incoming vehicles
+
+    global wait_counter
+
     adjusted_scores = {}
+
+    # 1. INIT + SAFETY BOUNDS
     for lane in lane_data:
-        predicted_increase = max(prediction_data[lane]["change"], 0)
-        adjusted_scores[lane] = lane_data[lane] + predicted_increase
+        lane_data[lane] = clamp(lane_data[lane], 0, 100)
+        wait_counter.setdefault(lane, 0)
 
-    history_boost = {}
+    # 2. HISTORY TREND (LANE-AGNOSTIC SIMPLIFIED BUT STABLE)
+    lane_hist = list(reversed([r["vehicle_count"] for r in history]))[:10] if history else []
+    trend_value = 0
+
+    if len(lane_hist) >= 10:
+        trend_value = (sum(lane_hist[:5]) - sum(lane_hist[5:])) / 5  # normalized trend
+
+    # 3. SCORE COMPUTATION (DECOMPOSED)
     for lane in lane_data:
-        lane_hist = [r["vehicle_count"] for r in history if True]  
-        trend = sum(lane_hist[-5:]) - sum(lane_hist[:5]) if len(lane_hist) >= 10 else 0
-        history_boost[lane] = trend * 0.3
-        adjusted_scores[lane] += history_boost[lane]
 
-    adjusted_scores[lane] += generate_ai_decision.wait_counter[lane] * 0.8
+        density_score = lane_data[lane] * 1.0
 
+        pred_score = max(0, prediction_data[lane]["change"]) * 2.0
+        pred_score = clamp(pred_score, 0, 100)
+
+        trend_score = clamp(50 + trend_value * 0.3, 0, 100)
+
+        fairness_score = clamp(wait_counter[lane] * 5, 0, 30)
+
+        adjusted_scores[lane] = (
+            density_score * 0.5 +
+            pred_score * 0.3 +
+            trend_score * 0.2 +
+            fairness_score * 0.4
+        )
+
+    # 4. SELECT BEST LANE
     best_lane = max(adjusted_scores, key=adjusted_scores.get)
-    score = adjusted_scores[best_lane]
+
+    # 5. UPDATE FAIRNESS STATE
+    for lane in lane_data:
+        if lane == best_lane:
+            wait_counter[lane] = 0
+        else:
+            wait_counter[lane] = min(wait_counter[lane] + 1, 10)
+
+    # 6. FINAL NORMALIZED SCORE (0–100)
+    total_score = sum(adjusted_scores.values()) or 1
+    score = round((adjusted_scores[best_lane] / total_score) * 100, 2)
+
+    # 7. URGENCY LOGIC
     prediction_change = prediction_data[best_lane]["change"]
 
-    # Urgency based on the winning lane's predicted change
     if prediction_change > 10:
         urgency = "Critical"
         trend_text = f"surging by +{prediction_change} vehicles"
@@ -31,18 +70,18 @@ def generate_ai_decision(lane_data, prediction_data, history):
         urgency = "Stable"
         trend_text = f"easing by {abs(prediction_change)} vehicles"
 
-    # Green time driven by adjusted score (future-aware), not just current count
-    green_time = 20 + (adjusted_scores[best_lane] // 2)
-    green_time = min(green_time, 60)
+    # 8. GREEN TIME (STABLE BOUND)
+    green_time = clamp(20 + int(score / 2), 10, 60)
 
-    # Detect upcoming hotspots: lanes currently quiet but about to spike
+    # 9. HOTSPOTS
     upcoming_hotspots = [
         lane for lane, data in prediction_data.items()
         if lane_data[lane] < 45 and data["change"] > 12 and lane != best_lane
     ]
 
-    # Time-of-day context
+    # 10. TIME CONTEXT
     hour = datetime.now().hour
+
     if 7 <= hour <= 9:
         time_context = "morning rush hour"
     elif 17 <= hour <= 19:
@@ -54,69 +93,50 @@ def generate_ai_decision(lane_data, prediction_data, history):
     else:
         time_context = "off-peak period"
 
+    # 11. RECOMMENDATION
     recommendation = (
-        f"During {time_context}, {best_lane} has highest adjusted load "
-        f"({lane_data[best_lane]} current, {trend_text}). "
-        f"Allocating {green_time}s green — {urgency.lower()} urgency."
+        f"During {time_context}, {best_lane} is prioritized with "
+        f"{lane_data[best_lane]} vehicles ({trend_text}). "
+        f"Allocating {green_time}s green signal — {urgency.lower()} urgency."
     )
 
     if upcoming_hotspots:
         hotspot = upcoming_hotspots[0]
-        change = prediction_data[hotspot]["change"]
         recommendation += (
-            f" Pre-alert: {hotspot} currently light but predicted "
-            f"to spike by +{change} — monitor closely."
+            f" Pre-alert: {hotspot} may spike by +{prediction_data[hotspot]['change']} vehicles."
         )
 
-    # Per-lane congestion status
-    congestion_breakdown = {}
-    for lane, count in lane_data.items():
-        if count > 65:
-            status = "critical"
-        elif count > 40:
-            status = "moderate"
-        else:
-            status = "clear"
-        congestion_breakdown[lane] = status
+    # 12. CONGESTION STATUS
+    congestion_breakdown = {
+        lane: (
+            "critical" if count > 65 else
+            "moderate" if count > 40 else
+            "clear"
+        )
+        for lane, count in lane_data.items()
+    }
 
-    # Full per-lane prediction data for the frontend
+    # 13. LANE PREDICTIONS
     lane_predictions = {}
+
     for lane, data in prediction_data.items():
         change = data["change"]
-        if change > 10:
-            severity = "spike"
-        elif change > 0:
-            severity = "rising"
-        elif change == 0:
-            severity = "stable"
-        else:
-            severity = "easing"
+
+        severity = (
+            "spike" if change > 10 else
+            "rising" if change > 0 else
+            "stable" if change == 0 else
+            "easing"
+        )
 
         lane_predictions[lane] = {
             "change": change,
             "trend": data["trend"],
             "severity": severity,
-            "adjusted_score": adjusted_scores[lane]
+            "adjusted_score": round(adjusted_scores[lane], 2)
         }
 
-    if not hasattr(generate_ai_decision, "wait_counter"):
-        generate_ai_decision.wait_counter = {}
-
-    for lane in lane_data:
-        generate_ai_decision.wait_counter.setdefault(lane, 0)
-
-    for lane in lane_data:
-        generate_ai_decision.wait_counter[lane] += 1
-        if lane == best_lane:
-            generate_ai_decision.wait_counter[lane] = 0
-        elif generate_ai_decision.wait_counter[lane] > 3:
-            recommendation += (
-                f" Note: {lane} has been waiting for "
-                f"{generate_ai_decision.wait_counter[lane]} cycles."
-            )
-
-    adjusted_scores[lane] += generate_ai_decision.wait_counter[lane] * 0.5
-
+    # 14. RETURN OUTPUT
     return {
         "active_lane": best_lane,
         "recommendation": recommendation,
@@ -127,7 +147,6 @@ def generate_ai_decision(lane_data, prediction_data, history):
         "lane_predictions": lane_predictions,
         "upcoming_hotspots": upcoming_hotspots
     }
-
 
 def generate_prediction_text(lane_data, lane_predictions):
     """Overall prediction using both current density AND forecast trends."""
