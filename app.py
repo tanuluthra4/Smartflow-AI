@@ -81,12 +81,19 @@ def traffic_data():
             lane_data[lane] += 2  # accumulation effect
 
     if emergency_mode:
-        active_signal = f"{emergency_lane_active} (Emergency)"
-        ai_message    = (
-            f"EMERGENCY: Green corridor active for {emergency_lane_active}. "
-            f"All other lanes holding. Priority clearance in progress."
+        active_signal = f"{emergency_lane_active} (Emergency Corridor Active)"
+
+        ai_message = (
+            f"GREEN WAVE INITIATED: Clearing path for emergency vehicle in {emergency_lane_active}. "
+            f"All other lanes dynamically suppressed to minimum cycle."
         )
+
         green_time = 60
+
+        # force suppression of other lanes
+        signal_times = {lane: 5 for lane in lane_data}
+        signal_times[emergency_lane_active] = 60
+        
     else:
         active_signal = decision["active_lane"]
         ai_message    = decision["recommendation"]
@@ -130,9 +137,13 @@ def traffic_data():
         "urgency":              decision["urgency"],             # ← now included
         "emergency_mode":       emergency_mode,
         "cycle_count":          cycle_count,
-        "total_density":        total_density
+        "total_density":        total_density,
+        "metrics": {
+            "estimated_wait_reduction": round(green_time * 0.8, 2),
+            "traffic_efficiency_score": min(100, 50 + green_time),
+            "congestion_level": congestion
+        }
     })
-
 
 @app.route("/api/emergency/<lane>", methods=["POST"])
 def emergency(lane):

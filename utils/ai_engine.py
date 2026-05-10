@@ -145,7 +145,19 @@ def generate_ai_decision(lane_data, prediction_data, history):
         "green_time": green_time,
         "congestion_breakdown": congestion_breakdown,
         "lane_predictions": lane_predictions,
-        "upcoming_hotspots": upcoming_hotspots
+        "upcoming_hotspots": upcoming_hotspots,
+        "explanation": {
+            "chosen_lane": best_lane,
+            "why": [
+                f"Highest congestion: {lane_data[best_lane]} vehicles",
+                f"Predicted inflow: +{prediction_data[best_lane]['change']}",
+                f"Fairness pressure: wait score applied",
+                f"Historical trend impact included"
+            ],
+            "alternative_lanes": [
+                lane for lane in lane_data if lane != best_lane
+            ]
+        }
     }
 
 def generate_prediction_text(lane_data, lane_predictions):
