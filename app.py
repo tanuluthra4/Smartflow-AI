@@ -6,6 +6,15 @@ from database.db import create_table, insert_log, get_recent_logs, get_hourly_st
 from utils.ai_engine import generate_ai_decision, generate_prediction_text
 import random
 
+import math
+from datetime import datetime
+
+def get_realistic_lane_count(base, hour, noise=8):
+    # Rush hours at 8-9am and 5-6pm
+    rush = math.exp(-0.5 * ((hour - 8.5) / 1.2)**2) + math.exp(-0.5 * ((hour - 17.5) / 1.2)**2)
+    count = int(base * (0.4 + 0.6 * rush) + random.randint(-noise, noise))
+    return max(5, min(80, count))
+
 app = Flask(__name__)
 create_table()
 
@@ -25,12 +34,13 @@ def traffic_data():
     global cycle_count
     cycle_count += 1
 
-    vehicle_count = random.randint(50, 200)
+    hour = datetime.now().hour
+    north_lane = get_realistic_lane_count(60, hour)  # busier by default
+    east_lane  = get_realistic_lane_count(45, hour)
+    south_lane = get_realistic_lane_count(50, hour)
+    west_lane  = get_realistic_lane_count(40, hour)
 
-    north_lane = random.randint(10, 80)
-    east_lane  = random.randint(10, 80)
-    south_lane = random.randint(10, 80)
-    west_lane  = random.randint(10, 80)
+    vehicle_count = north_lane + east_lane + south_lane + west_lane
 
     lane_data = {
         "North Lane": north_lane,
