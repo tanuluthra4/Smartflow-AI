@@ -238,6 +238,14 @@ function triggerAmbulance(laneName) {
     }, 4000);
 }
 
+function setCongestion(level) {
+    const el = document.getElementById("congestion-level");
+    const normalized = level.toLowerCase();
+
+    el.className = `congestion-badge ${normalized}`;
+    el.textContent = level.toUpperCase();
+}
+
 // ── EMERGENCY HANDLER ──
 let emergencyActive = false;
 
@@ -291,8 +299,7 @@ async function fetchTrafficData() {
         signalTimerEl.textContent = `${data.green_time}s`;
 
         // Congestion badge
-        congestionLevelEl.textContent = data.congestion;
-        congestionLevelEl.className = "metric-value " + data.congestion.toLowerCase();
+        setCongestion(data.congestion);
 
         // Active signal
         activeSignalEl.textContent = data.active_signal;
