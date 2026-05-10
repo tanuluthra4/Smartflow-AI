@@ -4,24 +4,27 @@ sys.path.insert(0, os.path.dirname(__file__))
 
 from database.db import create_table, insert_log, get_recent_logs, get_hourly_stats
 from utils.ai_engine import generate_ai_decision, generate_prediction_text
-import random
 
+import random
 import math
 from datetime import datetime
 
+
 def get_realistic_lane_count(base, hour, noise=8):
-    # Rush hours at 8-9am and 5-6pm
-    rush = math.exp(-0.5 * ((hour - 8.5) / 1.2)**2) + math.exp(-0.5 * ((hour - 17.5) / 1.2)**2)
+    rush = math.exp(-0.5 * ((hour - 8.5) / 1.2) ** 2) + math.exp(-0.5 * ((hour - 17.5) / 1.2) ** 2)
     count = int(base * (0.4 + 0.6 * rush) + random.randint(-noise, noise))
     return max(5, min(80, count))
+
 
 app = Flask(__name__)
 create_table()
 
 # Global state
 emergency_mode = False
-emergency_lane_active = "North Lane"
+emergency_lane_active = None
 cycle_count = 0
+
+VALID_LANES = ["North Lane", "East Lane", "South Lane", "West Lane"]
 
 
 @app.route("/")
@@ -35,7 +38,7 @@ def traffic_data():
     cycle_count += 1
 
     hour = datetime.now().hour
-    north_lane = get_realistic_lane_count(60, hour)  # busier by default
+    north_lane = get_realistic_lane_count(60, hour)
     east_lane  = get_realistic_lane_count(45, hour)
     south_lane = get_realistic_lane_count(50, hour)
     west_lane  = get_realistic_lane_count(40, hour)
@@ -46,11 +49,10 @@ def traffic_data():
         "North Lane": north_lane,
         "East Lane":  east_lane,
         "South Lane": south_lane,
-        "West Lane":  west_lane
+        "West Lane":  west_lane,
     }
 
-    max_density   = max(lane_data.values())
-    total_density = sum(lane_data.values())
+    max_density = max(lane_data.values())
 
     if max_density > 70:
         congestion    = "High"
@@ -68,52 +70,44 @@ def traffic_data():
         change = int((lane_data[lane] * 0.1) + random.randint(-5, 5))
         prediction_data[lane] = {
             "change": change,
-            "trend":  "increase" if change >= 0 else "decrease"
+            "trend":  "increase" if change >= 0 else "decrease",
         }
 
-    history = get_recent_logs(20)
+    history  = get_recent_logs(20)
     decision = generate_ai_decision(lane_data, prediction_data, history)
 
+    # Apply signal effect BEFORE computing signal_times
     for lane in lane_data:
         if lane == decision["active_lane"]:
             lane_data[lane] = max(5, lane_data[lane] - decision["green_time"] // 2)
         else:
-            lane_data[lane] += 2  # accumulation effect
+            lane_data[lane] += 2
 
-    if emergency_mode:
+    # FIX 2: Emergency block sets everything AND we don't overwrite signal_times below
+    if emergency_mode and emergency_lane_active:
         active_signal = f"{emergency_lane_active} (Emergency Corridor Active)"
-
-        ai_message = (
-            f"GREEN WAVE INITIATED: Clearing path for emergency vehicle in {emergency_lane_active}. "
-            f"All other lanes dynamically suppressed to minimum cycle."
+        ai_message    = (
+            f"GREEN WAVE INITIATED: Clearing path for emergency vehicle in "
+            f"{emergency_lane_active}. All other lanes suppressed to minimum cycle."
         )
-
-        green_time = 60
-
-        # force suppression of other lanes
-        signal_times = {lane: 5 for lane in lane_data}
-        signal_times[emergency_lane_active] = 60
-        
+        green_time   = 60
+        signal_times = {lane: (60 if lane == emergency_lane_active else 5) for lane in lane_data}
     else:
         active_signal = decision["active_lane"]
         ai_message    = decision["recommendation"]
         green_time    = decision["green_time"]
+        # Weighted signal timing
+        total = sum(lane_data.values()) or 1
+        signal_times = {lane: max(10, int((count / total) * 120)) for lane, count in lane_data.items()}
 
     wait_time          = max(5, 60 - (green_time // 2))
     traffic_efficiency = min(98, 50 + (green_time // 2))
 
-    # generate_prediction_text now uses lane_predictions too
     prediction_text = generate_prediction_text(lane_data, decision["lane_predictions"])
-
-    # Weighted signal timing for all lanes
-    signal_times = {}
-    total = sum(lane_data.values()) or 1
-    for lane, count in lane_data.items():
-        signal_times[lane] = max(10, int((count / total) * 120))
 
     insert_log(
         vehicle_count, congestion, active_signal,
-        north_lane, east_lane, south_lane, west_lane, green_time
+        north_lane, east_lane, south_lane, west_lane, green_time,
     )
 
     return jsonify({
@@ -132,40 +126,37 @@ def traffic_data():
         "traffic_alert":        traffic_alert,
         "signal_times":         signal_times,
         "congestion_breakdown": decision["congestion_breakdown"],
-        "lane_predictions":     decision["lane_predictions"],   # ← now included
-        "upcoming_hotspots":    decision["upcoming_hotspots"],  # ← now included
-        "urgency":              decision["urgency"],             # ← now included
+        "lane_predictions":     decision["lane_predictions"],
+        "upcoming_hotspots":    decision["upcoming_hotspots"],
+        "urgency":              decision["urgency"],
         "emergency_mode":       emergency_mode,
         "cycle_count":          cycle_count,
-        "total_density":        total_density,
+        "total_density":        sum(lane_data.values()),
         "metrics": {
             "estimated_wait_reduction": round(green_time * 0.8, 2),
             "traffic_efficiency_score": min(100, 50 + green_time),
-            "congestion_level": congestion
-        }
+            "congestion_level":         congestion,
+        },
     })
+
+
+# FIX 3: Separate emergency/stop route BEFORE the <lane> dynamic route
+@app.route("/api/emergency/stop", methods=["POST"])
+def stop_emergency():
+    global emergency_mode, emergency_lane_active
+    emergency_mode        = False
+    emergency_lane_active = None
+    return jsonify({"emergency_mode": False, "active_lane": None, "message": "Emergency mode stopped"})
+
 
 @app.route("/api/emergency/<lane>", methods=["POST"])
 def emergency(lane):
     global emergency_mode, emergency_lane_active
-
-    valid_lanes = ["North Lane", "East Lane", "South Lane", "West Lane"]
-    if lane not in valid_lanes:
+    if lane not in VALID_LANES:
         return jsonify({"error": "Invalid lane"}), 400
-
-    emergency_mode = not emergency_mode
-    if emergency_mode:
-        emergency_lane_active = lane
-
-    return jsonify({
-        "emergency_mode": emergency_mode,
-        "active_lane":    emergency_lane_active if emergency_mode else None,
-        "message": (
-            f"Emergency vehicle detected in {lane}. Green corridor activated."
-            if emergency_mode
-            else "Emergency mode deactivated. Resuming adaptive signal control."
-        )
-    })
+    emergency_mode        = True
+    emergency_lane_active = lane
+    return jsonify({"emergency_mode": True, "active_lane": lane, "message": f"Emergency activated for {lane}"})
 
 
 @app.route("/api/history")

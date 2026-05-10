@@ -85,9 +85,14 @@
                 <span class="metric-value-sm" id="active-signal">Initializing…</span>
             </div>
 
-            <div class="metric-card-wide">
-                <span class="metric-label">Green Time</span>
-                <span class="metric-value mono" id="signal-timer">—s</span>
+            <div class="metric-card-wide signal-card" style="flex-direction:column;align-items:stretch;gap:6px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <span class="metric-label">Green Time</span>
+                    <span class="metric-value mono" id="signal-timer">—s</span>
+                </div>
+                <div class="signal-bar-track">
+                    <div class="signal-bar-fill" id="signal-bar-fill"></div>
+                </div>
             </div>
 
             <!-- Lane Density -->
@@ -161,9 +166,6 @@
             </div>
         </aside>
 
-        <!-- ══════════════════════════
-             CENTER — Live Junction
-        ══════════════════════════ -->
         <section class="center-panel">
             <div class="junction-title">
                 <span>Live Traffic Junction</span>
@@ -261,9 +263,6 @@
             </div>
         </section>
 
-        <!-- ══════════════════════════
-             RIGHT PANEL — AI Intelligence
-        ══════════════════════════ -->
         <aside class="right-panel">
             <div class="panel-header">AI Intelligence Feed</div>
 
