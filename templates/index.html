@@ -7,24 +7,24 @@
     <title>SmartFlow AI — Adaptive Junction Intelligence</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
 <body>
 
-    <!-- TOPBAR -->
+    <!-- ══ TOPBAR ══ -->
     <nav class="topbar">
         <div class="logo-area">
             <div class="logo-icon">
-                <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-                    <circle cx="14" cy="14" r="13" stroke="#00d4ff" stroke-width="1.5" />
-                    <circle cx="14" cy="14" r="4" fill="#00d4ff" />
-                    <line x1="14" y1="1" x2="14" y2="6" stroke="#00d4ff" stroke-width="1.5" stroke-linecap="round" />
-                    <line x1="14" y1="22" x2="14" y2="27" stroke="#00d4ff" stroke-width="1.5" stroke-linecap="round" />
-                    <line x1="1" y1="14" x2="6" y2="14" stroke="#00d4ff" stroke-width="1.5" stroke-linecap="round" />
-                    <line x1="22" y1="14" x2="27" y2="14" stroke="#00d4ff" stroke-width="1.5" stroke-linecap="round" />
+                <svg width="26" height="26" viewBox="0 0 28 28" fill="none">
+                    <circle cx="14" cy="14" r="12" stroke="#f5a623" stroke-width="1.5"/>
+                    <circle cx="14" cy="14" r="3.5" fill="#f5a623"/>
+                    <line x1="14" y1="2"  x2="14" y2="7"  stroke="#f5a623" stroke-width="1.5" stroke-linecap="round"/>
+                    <line x1="14" y1="21" x2="14" y2="26" stroke="#f5a623" stroke-width="1.5" stroke-linecap="round"/>
+                    <line x1="2"  y1="14" x2="7"  y2="14" stroke="#f5a623" stroke-width="1.5" stroke-linecap="round"/>
+                    <line x1="21" y1="14" x2="26" y2="14" stroke="#f5a623" stroke-width="1.5" stroke-linecap="round"/>
                 </svg>
             </div>
             <div>
@@ -32,6 +32,7 @@
                 <p class="logo-sub">Adaptive Junction Intelligence</p>
             </div>
         </div>
+
         <div class="topbar-center">
             <div class="stat-pill">
                 <span class="pill-label">Cycle</span>
@@ -46,6 +47,7 @@
                 <span class="pill-value mono" id="wait-display">—s</span>
             </div>
         </div>
+
         <div class="topbar-right">
             <div class="system-status" id="system-status">
                 <span class="pulse-dot"></span>
@@ -54,17 +56,19 @@
         </div>
     </nav>
 
-    <!-- EMERGENCY BANNER (hidden by default) -->
+    <!-- ══ EMERGENCY BANNER ══ -->
     <div class="emergency-banner" id="emergency-banner">
         <div class="emergency-icon">⚠</div>
         <span id="emergency-banner-text">EMERGENCY VEHICLE DETECTED — GREEN CORRIDOR ACTIVE</span>
         <div class="emergency-icon">⚠</div>
     </div>
 
-    <!-- MAIN GRID -->
+    <!-- ══ MAIN GRID ══ -->
     <main class="main-grid">
 
-        <!-- LEFT PANEL: Metrics + Lane Density -->
+        <!-- ══════════════════════════
+             LEFT PANEL — Junction Status
+        ══════════════════════════ -->
         <aside class="left-panel">
             <div class="panel-header">Junction Status</div>
 
@@ -89,11 +93,10 @@
                 <span class="metric-value mono" id="signal-timer">—s</span>
             </div>
 
-            <!-- Lane Density Bars -->
+            <!-- Lane Density -->
             <div class="section-title">Lane Density</div>
             <div class="lane-bars">
 
-                <!-- NORTH -->
                 <div class="lane-item">
                     <div class="lane-header">
                         <span class="lane-dir">N</span>
@@ -110,7 +113,6 @@
                     </div>
                 </div>
 
-                <!-- EAST -->
                 <div class="lane-item">
                     <div class="lane-header">
                         <span class="lane-dir">E</span>
@@ -127,7 +129,6 @@
                     </div>
                 </div>
 
-                <!-- SOUTH -->
                 <div class="lane-item">
                     <div class="lane-header">
                         <span class="lane-dir">S</span>
@@ -144,7 +145,6 @@
                     </div>
                 </div>
 
-                <!-- WEST -->
                 <div class="lane-item">
                     <div class="lane-header">
                         <span class="lane-dir">W</span>
@@ -164,7 +164,9 @@
             </div>
         </aside>
 
-        <!-- CENTER: Junction Visualization -->
+        <!-- ══════════════════════════
+             CENTER — Live Junction
+        ══════════════════════════ -->
         <section class="center-panel">
             <div class="junction-title">
                 <span>Live Traffic Junction</span>
@@ -175,6 +177,7 @@
                 <div class="intersection">
                     <div class="road v-road"></div>
                     <div class="road h-road"></div>
+
                     <div class="junction-center">
                         <div class="junction-center-grid">
                             <div class="grid-cell"></div>
@@ -184,47 +187,50 @@
                         </div>
                     </div>
 
-                    <!-- Traffic Signals -->
+                    <!-- ── Traffic Signals ── -->
                     <div class="signal-post north-signal" id="sig-north">
                         <div class="signal-body">
-                            <div class="signal-light red" id="light-north-red"></div>
+                            <div class="signal-light red"    id="light-north-red"></div>
                             <div class="signal-light yellow" id="light-north-yellow"></div>
-                            <div class="signal-light green" id="light-north-green"></div>
+                            <div class="signal-light green"  id="light-north-green"></div>
                         </div>
                         <div class="signal-label">N</div>
                     </div>
+
                     <div class="signal-post east-signal" id="sig-east">
                         <div class="signal-body signal-h">
-                            <div class="signal-light red" id="light-east-red"></div>
+                            <div class="signal-light red"    id="light-east-red"></div>
                             <div class="signal-light yellow" id="light-east-yellow"></div>
-                            <div class="signal-light green" id="light-east-green"></div>
+                            <div class="signal-light green"  id="light-east-green"></div>
                         </div>
                         <div class="signal-label">E</div>
                     </div>
+
                     <div class="signal-post south-signal" id="sig-south">
                         <div class="signal-body">
-                            <div class="signal-light red" id="light-south-red"></div>
+                            <div class="signal-light red"    id="light-south-red"></div>
                             <div class="signal-light yellow" id="light-south-yellow"></div>
-                            <div class="signal-light green" id="light-south-green"></div>
+                            <div class="signal-light green"  id="light-south-green"></div>
                         </div>
                         <div class="signal-label">S</div>
                     </div>
+
                     <div class="signal-post west-signal" id="sig-west">
                         <div class="signal-body signal-h">
-                            <div class="signal-light red" id="light-west-red"></div>
+                            <div class="signal-light red"    id="light-west-red"></div>
                             <div class="signal-light yellow" id="light-west-yellow"></div>
-                            <div class="signal-light green" id="light-west-green"></div>
+                            <div class="signal-light green"  id="light-west-green"></div>
                         </div>
                         <div class="signal-label">W</div>
                     </div>
 
-                    <!-- Cars -->
+                    <!-- ── Cars ── -->
                     <div class="car north-car" id="car-north"></div>
-                    <div class="car east-car" id="car-east"></div>
+                    <div class="car east-car"  id="car-east"></div>
                     <div class="car south-car" id="car-south"></div>
-                    <div class="car west-car" id="car-west"></div>
+                    <div class="car west-car"  id="car-west"></div>
 
-                    <!-- Ambulance -->
+                    <!-- ── Ambulance ── -->
                     <div class="ambulance" id="ambulance">
                         <div class="amb-body">
                             <div class="amb-cross">+</div>
@@ -235,11 +241,11 @@
                         </div>
                     </div>
 
-                    <!-- Density badges -->
+                    <!-- ── Density Badges ── -->
                     <div class="density-badge north-badge" id="badge-north">0</div>
-                    <div class="density-badge east-badge" id="badge-east">0</div>
+                    <div class="density-badge east-badge"  id="badge-east">0</div>
                     <div class="density-badge south-badge" id="badge-south">0</div>
-                    <div class="density-badge west-badge" id="badge-west">0</div>
+                    <div class="density-badge west-badge"  id="badge-west">0</div>
                 </div>
             </div>
 
@@ -258,7 +264,9 @@
             </div>
         </section>
 
-        <!-- RIGHT PANEL: AI Feed + Chart -->
+        <!-- ══════════════════════════
+             RIGHT PANEL — AI Intelligence
+        ══════════════════════════ -->
         <aside class="right-panel">
             <div class="panel-header">AI Intelligence Feed</div>
 
@@ -267,7 +275,6 @@
                 <p id="prediction">Analyzing traffic patterns…</p>
             </div>
 
-            <!-- Hotspot warning — shown only when a quiet lane is about to spike -->
             <div class="ai-card hotspot-card" id="hotspot-card" style="display:none;">
                 <div class="ai-card-tag">⚠ Upcoming Hotspot</div>
                 <p id="hotspot-message"></p>
@@ -288,10 +295,10 @@
                 <div class="chart-header">
                     <span>Vehicle Density — Live</span>
                     <span class="chart-legend">
-                        <span class="legend-dot" style="background:#00d4ff"></span>Vehicles
+                        <span class="legend-dot" style="background:#f5a623"></span>Vehicles
                     </span>
                 </div>
-                <div style="position:relative; height:180px;">
+                <div style="position:relative; height:160px;">
                     <canvas id="trafficChart" role="img" aria-label="Live vehicle density chart"></canvas>
                 </div>
             </div>
@@ -299,7 +306,7 @@
 
     </main>
 
-    <!-- ACTIVITY FEED -->
+    <!-- ══ ACTIVITY FEED ══ -->
     <section class="activity-section">
         <div class="activity-header">
             <span>Live Activity Feed</span>
@@ -309,6 +316,21 @@
     </section>
 
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+
+    <!-- Chart colour override to amber -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Override chart dataset color after app.js creates it
+            setTimeout(() => {
+                if (window.trafficChart) {
+                    trafficChart.data.datasets[0].borderColor = '#f5a623';
+                    trafficChart.data.datasets[0].backgroundColor = 'rgba(245,166,35,0.07)';
+                    trafficChart.data.datasets[0].pointBackgroundColor = '#f5a623';
+                    trafficChart.update('none');
+                }
+            }, 200);
+        });
+    </script>
 </body>
 
 </html>
