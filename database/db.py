@@ -1,7 +1,7 @@
 import sqlite3
 from datetime import datetime
-
-DB_PATH = "database/traffic.db"
+import os
+DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "traffic.db")
 
 def connect_db():
     connection = sqlite3.connect(DB_PATH)

@@ -7,7 +7,7 @@
     <title>SmartFlow AI — Adaptive Junction Intelligence</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
@@ -92,50 +92,75 @@
             <!-- Lane Density Bars -->
             <div class="section-title">Lane Density</div>
             <div class="lane-bars">
+
+                <!-- NORTH -->
                 <div class="lane-item">
                     <div class="lane-header">
                         <span class="lane-dir">N</span>
                         <span class="lane-direction-label">North</span>
                         <span class="lane-count mono" id="north-count">0</span>
+                        <span class="lane-trend" id="north-trend"></span>
                     </div>
                     <div class="bar-track">
                         <div class="bar-fill north-bar" id="north-bar"></div>
                     </div>
-                    <span class="lane-status" id="north-status"></span>
+                    <div class="lane-footer">
+                        <span class="lane-status" id="north-status"></span>
+                        <span class="lane-forecast" id="north-forecast"></span>
+                    </div>
                 </div>
+
+                <!-- EAST -->
                 <div class="lane-item">
                     <div class="lane-header">
                         <span class="lane-dir">E</span>
                         <span class="lane-direction-label">East</span>
                         <span class="lane-count mono" id="east-count">0</span>
+                        <span class="lane-trend" id="east-trend"></span>
                     </div>
                     <div class="bar-track">
                         <div class="bar-fill east-bar" id="east-bar"></div>
                     </div>
-                    <span class="lane-status" id="east-status"></span>
+                    <div class="lane-footer">
+                        <span class="lane-status" id="east-status"></span>
+                        <span class="lane-forecast" id="east-forecast"></span>
+                    </div>
                 </div>
+
+                <!-- SOUTH -->
                 <div class="lane-item">
                     <div class="lane-header">
                         <span class="lane-dir">S</span>
                         <span class="lane-direction-label">South</span>
                         <span class="lane-count mono" id="south-count">0</span>
+                        <span class="lane-trend" id="south-trend"></span>
                     </div>
                     <div class="bar-track">
                         <div class="bar-fill south-bar" id="south-bar"></div>
                     </div>
-                    <span class="lane-status" id="south-status"></span>
+                    <div class="lane-footer">
+                        <span class="lane-status" id="south-status"></span>
+                        <span class="lane-forecast" id="south-forecast"></span>
+                    </div>
                 </div>
+
+                <!-- WEST -->
                 <div class="lane-item">
                     <div class="lane-header">
                         <span class="lane-dir">W</span>
                         <span class="lane-direction-label">West</span>
                         <span class="lane-count mono" id="west-count">0</span>
+                        <span class="lane-trend" id="west-trend"></span>
                     </div>
                     <div class="bar-track">
                         <div class="bar-fill west-bar" id="west-bar"></div>
                     </div>
-                    <span class="lane-status" id="west-status"></span>
+                    <div class="lane-footer">
+                        <span class="lane-status" id="west-status"></span>
+                        <span class="lane-forecast" id="west-forecast"></span>
+                    </div>
                 </div>
+
             </div>
         </aside>
 
@@ -146,13 +171,10 @@
                 <span class="junction-tag" id="junction-state-tag">ADAPTIVE MODE</span>
             </div>
 
-            <!-- THE JUNCTION -->
             <div class="junction-wrap">
                 <div class="intersection">
-                    <!-- Roads -->
                     <div class="road v-road"></div>
                     <div class="road h-road"></div>
-                    <!-- Center Box -->
                     <div class="junction-center">
                         <div class="junction-center-grid">
                             <div class="grid-cell"></div>
@@ -213,7 +235,7 @@
                         </div>
                     </div>
 
-                    <!-- Density mini-labels -->
+                    <!-- Density badges -->
                     <div class="density-badge north-badge" id="badge-north">0</div>
                     <div class="density-badge east-badge" id="badge-east">0</div>
                     <div class="density-badge south-badge" id="badge-south">0</div>
@@ -243,6 +265,12 @@
             <div class="ai-card prediction-card">
                 <div class="ai-card-tag">Prediction</div>
                 <p id="prediction">Analyzing traffic patterns…</p>
+            </div>
+
+            <!-- Hotspot warning — shown only when a quiet lane is about to spike -->
+            <div class="ai-card hotspot-card" id="hotspot-card" style="display:none;">
+                <div class="ai-card-tag">⚠ Upcoming Hotspot</div>
+                <p id="hotspot-message"></p>
             </div>
 
             <div class="ai-card alert-card" id="alert-card">

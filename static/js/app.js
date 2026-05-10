@@ -23,47 +23,55 @@ const cycleCountEl = document.getElementById("cycle-count");
 // Lane elements
 const lanes = {
     "North Lane": {
-        count: document.getElementById("north-count"),
-        bar: document.getElementById("north-bar"),
-        status: document.getElementById("north-status"),
-        badge: document.getElementById("badge-north"),
+        count:    document.getElementById("north-count"),
+        bar:      document.getElementById("north-bar"),
+        status:   document.getElementById("north-status"),
+        badge:    document.getElementById("badge-north"),
+        trend:    document.getElementById("north-trend"),
+        forecast: document.getElementById("north-forecast"),
         lights: {
-            red: document.getElementById("light-north-red"),
+            red:    document.getElementById("light-north-red"),
             yellow: document.getElementById("light-north-yellow"),
-            green: document.getElementById("light-north-green"),
+            green:  document.getElementById("light-north-green"),
         }
     },
     "East Lane": {
-        count: document.getElementById("east-count"),
-        bar: document.getElementById("east-bar"),
-        status: document.getElementById("east-status"),
-        badge: document.getElementById("badge-east"),
+        count:    document.getElementById("east-count"),
+        bar:      document.getElementById("east-bar"),
+        status:   document.getElementById("east-status"),
+        badge:    document.getElementById("badge-east"),
+        trend:    document.getElementById("east-trend"),
+        forecast: document.getElementById("east-forecast"),
         lights: {
-            red: document.getElementById("light-east-red"),
+            red:    document.getElementById("light-east-red"),
             yellow: document.getElementById("light-east-yellow"),
-            green: document.getElementById("light-east-green"),
+            green:  document.getElementById("light-east-green"),
         }
     },
     "South Lane": {
-        count: document.getElementById("south-count"),
-        bar: document.getElementById("south-bar"),
-        status: document.getElementById("south-status"),
-        badge: document.getElementById("badge-south"),
+        count:    document.getElementById("south-count"),
+        bar:      document.getElementById("south-bar"),
+        status:   document.getElementById("south-status"),
+        badge:    document.getElementById("badge-south"),
+        trend:    document.getElementById("south-trend"),
+        forecast: document.getElementById("south-forecast"),
         lights: {
-            red: document.getElementById("light-south-red"),
+            red:    document.getElementById("light-south-red"),
             yellow: document.getElementById("light-south-yellow"),
-            green: document.getElementById("light-south-green"),
+            green:  document.getElementById("light-south-green"),
         }
     },
     "West Lane": {
-        count: document.getElementById("west-count"),
-        bar: document.getElementById("west-bar"),
-        status: document.getElementById("west-status"),
-        badge: document.getElementById("badge-west"),
+        count:    document.getElementById("west-count"),
+        bar:      document.getElementById("west-bar"),
+        status:   document.getElementById("west-status"),
+        badge:    document.getElementById("badge-west"),
+        trend:    document.getElementById("west-trend"),
+        forecast: document.getElementById("west-forecast"),
         lights: {
-            red: document.getElementById("light-west-red"),
+            red:    document.getElementById("light-west-red"),
             yellow: document.getElementById("light-west-yellow"),
-            green: document.getElementById("light-west-green"),
+            green:  document.getElementById("light-west-green"),
         }
     }
 };
@@ -182,19 +190,41 @@ function updateSignals(activeSignal, emergency) {
     });
 }
 
-// Update lane density bar + badge
-function updateLane(laneName, count, status) {
+// Trend arrow + label per severity
+const TREND_DISPLAY = {
+    spike:  { arrow: "↑↑", label: "Spike" },
+    rising: { arrow: "↑",  label: "Rising" },
+    stable: { arrow: "→",  label: "Stable" },
+    easing: { arrow: "↓",  label: "Easing" },
+};
+
+// Update lane density bar, badge, trend arrow, and forecast text
+function updateLane(laneName, count, status, predictionInfo) {
     const el = lanes[laneName];
     if (!el) return;
 
-    el.count.textContent = count;
-    el.bar.style.width = `${Math.min(count, 80) / 80 * 100}%`;
-    el.badge.textContent = count;
+    el.count.textContent  = count;
+    el.bar.style.width    = `${Math.min(count, 80) / 80 * 100}%`;
+    el.badge.textContent  = count;
 
     const statusMap = { critical: "Critical density", moderate: "Moderate load", clear: "Clear" };
     el.status.textContent = statusMap[status] || "";
-
     el.badge.classList.toggle("critical", status === "critical");
+
+    // Prediction-driven trend display
+    if (predictionInfo && el.trend && el.forecast) {
+        const { severity, change, adjusted_score } = predictionInfo;
+        const display = TREND_DISPLAY[severity] || TREND_DISPLAY.stable;
+
+        // Arrow + severity
+        el.trend.textContent  = display.arrow;
+        el.trend.className    = `lane-trend ${severity}`;
+
+        // Forecast line: "+12 · score 74" or "−5 · score 38"
+        const sign = change >= 0 ? "+" : "";
+        el.forecast.textContent = `${sign}${change} predicted · score ${adjusted_score}`;
+        el.forecast.className   = `lane-forecast ${severity}`;
+    }
 }
 
 // Trigger ambulance animation
@@ -280,17 +310,31 @@ async function fetchTrafficData() {
             aiMessageEl.textContent = data.ai_message;
         }
 
-        // Lane data
+        // Lane data — now includes prediction info
         const laneMap = {
-            "North Lane": { count: data.north_lane, status: data.congestion_breakdown?.["North Lane"] || "clear" },
-            "East Lane": { count: data.east_lane, status: data.congestion_breakdown?.["East Lane"] || "clear" },
-            "South Lane": { count: data.south_lane, status: data.congestion_breakdown?.["South Lane"] || "clear" },
-            "West Lane": { count: data.west_lane, status: data.congestion_breakdown?.["West Lane"] || "clear" }
+            "North Lane": { count: data.north_lane, status: data.congestion_breakdown?.["North Lane"] || "clear", pred: data.lane_predictions?.["North Lane"] },
+            "East Lane":  { count: data.east_lane,  status: data.congestion_breakdown?.["East Lane"]  || "clear", pred: data.lane_predictions?.["East Lane"]  },
+            "South Lane": { count: data.south_lane, status: data.congestion_breakdown?.["South Lane"] || "clear", pred: data.lane_predictions?.["South Lane"] },
+            "West Lane":  { count: data.west_lane,  status: data.congestion_breakdown?.["West Lane"]  || "clear", pred: data.lane_predictions?.["West Lane"]  }
         };
 
         Object.entries(laneMap).forEach(([name, info]) => {
-            updateLane(name, info.count, info.status);
+            updateLane(name, info.count, info.status, info.pred);
         });
+
+        // Hotspot warning card
+        const hotspotCard = document.getElementById("hotspot-card");
+        const hotspotMsg  = document.getElementById("hotspot-message");
+        const hotspots    = data.upcoming_hotspots || [];
+
+        if (hotspots.length > 0) {
+            const lane   = hotspots[0];
+            const change = data.lane_predictions?.[lane]?.change || "?";
+            hotspotMsg.textContent  = `${lane} is currently light but forecast to surge by +${change} vehicles next cycle. AI has flagged it for pre-emptive monitoring.`;
+            hotspotCard.style.display = "block";
+        } else {
+            hotspotCard.style.display = "none";
+        }
 
         // Signals
         updateSignals(data.active_signal, data.emergency_mode);
@@ -298,9 +342,14 @@ async function fetchTrafficData() {
         // Chart
         updateChart(data.vehicle_count);
 
-        // Log significant events only
+        // Log significant events
         if (data.congestion === "High") {
             addLog(`High congestion — ${data.active_signal} priority activated. Green: ${data.green_time}s`, "warning");
+        }
+        if ((data.upcoming_hotspots || []).length > 0) {
+            const hs = data.upcoming_hotspots[0];
+            const ch = data.lane_predictions?.[hs]?.change;
+            addLog(`Pre-alert: ${hs} predicted to spike by +${ch} vehicles — monitoring.`, "warning");
         }
 
     } catch (err) {
