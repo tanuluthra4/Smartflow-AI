@@ -1,124 +1,124 @@
 // ── SmartFlow AI — Frontend Controller ──
 
 // DOM References
-const vehicleCountEl    = document.getElementById("vehicle-count");
+const vehicleCountEl = document.getElementById("vehicle-count");
 const congestionLevelEl = document.getElementById("congestion-level");
-const activeSignalEl    = document.getElementById("active-signal");
-const signalTimerEl     = document.getElementById("signal-timer");
-const predictionEl      = document.getElementById("prediction");
-const trafficAlertEl    = document.getElementById("traffic-alert");
-const aiMessageEl       = document.getElementById("ai-message");
-const emergencyBanner   = document.getElementById("emergency-banner");
+const activeSignalEl = document.getElementById("active-signal");
+const signalTimerEl = document.getElementById("signal-timer");
+const predictionEl = document.getElementById("prediction");
+const trafficAlertEl = document.getElementById("traffic-alert");
+const aiMessageEl = document.getElementById("ai-message");
+const emergencyBanner = document.getElementById("emergency-banner");
 const emergencyBannerTx = document.getElementById("emergency-banner-text");
-const junctionStateTag  = document.getElementById("junction-state-tag");
-const emergencyBtn      = document.getElementById("emergency-btn");
-const emergencyLaneSel  = document.getElementById("emergency-lane");
-const activityLogEl     = document.getElementById("activity-log");
-const activityCountEl   = document.getElementById("activity-count");
-const ambulanceEl       = document.getElementById("ambulance");
+const junctionStateTag = document.getElementById("junction-state-tag");
+const emergencyBtn = document.getElementById("emergency-btn");
+const emergencyLaneSel = document.getElementById("emergency-lane");
+const activityLogEl = document.getElementById("activity-log");
+const activityCountEl = document.getElementById("activity-count");
+const ambulanceEl = document.getElementById("ambulance");
 const efficiencyDisplay = document.getElementById("efficiency-display");
-const waitDisplay       = document.getElementById("wait-display");
-const cycleCountEl      = document.getElementById("cycle-count");
+const waitDisplay = document.getElementById("wait-display");
+const cycleCountEl = document.getElementById("cycle-count");
 
 // Cycle state
-let isSwitching       = false;
+let isSwitching = false;
 let currentActiveLane = null;
-let signalTimer       = null;       // setTimeout handle for end-of-cycle fetch
+let signalTimer = null;       // setTimeout handle for end-of-cycle fetch
 let countdownInterval = null;       // setInterval handle for the visual bar
 
 // Emergency state (module-scoped so it persists across polls)
-let emergencyActive    = false;
+let emergencyActive = false;
 let lastEmergencyState = false;
-let lastEmergencyLane  = null;
-let ambulanceTimeout   = null;      // so we can cancel mid-animation
+let lastEmergencyLane = null;
+let ambulanceTimeout = null;      // so we can cancel mid-animation
 
 // Lane elements
 const lanes = {
     "North Lane": {
-        count:    document.getElementById("north-count"),
-        bar:      document.getElementById("north-bar"),
-        status:   document.getElementById("north-status"),
-        badge:    document.getElementById("badge-north"),
-        trend:    document.getElementById("north-trend"),
+        count: document.getElementById("north-count"),
+        bar: document.getElementById("north-bar"),
+        status: document.getElementById("north-status"),
+        badge: document.getElementById("badge-north"),
+        trend: document.getElementById("north-trend"),
         forecast: document.getElementById("north-forecast"),
-        item:     document.querySelector(".lane-item:nth-child(1)"),
-        car:      document.getElementById("car-north"),
+        item: document.querySelector(".lane-item:nth-child(1)"),
+        car: document.getElementById("car-north"),
         lights: {
-            red:    document.getElementById("light-north-red"),
+            red: document.getElementById("light-north-red"),
             yellow: document.getElementById("light-north-yellow"),
-            green:  document.getElementById("light-north-green"),
+            green: document.getElementById("light-north-green"),
         },
     },
     "East Lane": {
-        count:    document.getElementById("east-count"),
-        bar:      document.getElementById("east-bar"),
-        status:   document.getElementById("east-status"),
-        badge:    document.getElementById("badge-east"),
-        trend:    document.getElementById("east-trend"),
+        count: document.getElementById("east-count"),
+        bar: document.getElementById("east-bar"),
+        status: document.getElementById("east-status"),
+        badge: document.getElementById("badge-east"),
+        trend: document.getElementById("east-trend"),
         forecast: document.getElementById("east-forecast"),
-        item:     document.querySelector(".lane-item:nth-child(2)"),
-        car:      document.getElementById("car-east"),
+        item: document.querySelector(".lane-item:nth-child(2)"),
+        car: document.getElementById("car-east"),
         lights: {
-            red:    document.getElementById("light-east-red"),
+            red: document.getElementById("light-east-red"),
             yellow: document.getElementById("light-east-yellow"),
-            green:  document.getElementById("light-east-green"),
+            green: document.getElementById("light-east-green"),
         },
     },
     "South Lane": {
-        count:    document.getElementById("south-count"),
-        bar:      document.getElementById("south-bar"),
-        status:   document.getElementById("south-status"),
-        badge:    document.getElementById("badge-south"),
-        trend:    document.getElementById("south-trend"),
+        count: document.getElementById("south-count"),
+        bar: document.getElementById("south-bar"),
+        status: document.getElementById("south-status"),
+        badge: document.getElementById("badge-south"),
+        trend: document.getElementById("south-trend"),
         forecast: document.getElementById("south-forecast"),
-        item:     document.querySelector(".lane-item:nth-child(3)"),
-        car:      document.getElementById("car-south"),
+        item: document.querySelector(".lane-item:nth-child(3)"),
+        car: document.getElementById("car-south"),
         lights: {
-            red:    document.getElementById("light-south-red"),
+            red: document.getElementById("light-south-red"),
             yellow: document.getElementById("light-south-yellow"),
-            green:  document.getElementById("light-south-green"),
+            green: document.getElementById("light-south-green"),
         },
     },
     "West Lane": {
-        count:    document.getElementById("west-count"),
-        bar:      document.getElementById("west-bar"),
-        status:   document.getElementById("west-status"),
-        badge:    document.getElementById("badge-west"),
-        trend:    document.getElementById("west-trend"),
+        count: document.getElementById("west-count"),
+        bar: document.getElementById("west-bar"),
+        status: document.getElementById("west-status"),
+        badge: document.getElementById("badge-west"),
+        trend: document.getElementById("west-trend"),
         forecast: document.getElementById("west-forecast"),
-        item:     document.querySelector(".lane-item:nth-child(4)"),
-        car:      document.getElementById("car-west"),
+        item: document.querySelector(".lane-item:nth-child(4)"),
+        car: document.getElementById("car-west"),
         lights: {
-            red:    document.getElementById("light-west-red"),
+            red: document.getElementById("light-west-red"),
             yellow: document.getElementById("light-west-yellow"),
-            green:  document.getElementById("light-west-green"),
+            green: document.getElementById("light-west-green"),
         },
     },
 };
 
 // ── Chart ──
-const ctx         = document.getElementById("trafficChart");
+const ctx = document.getElementById("trafficChart");
 const chartLabels = [];
-const chartData   = [];
+const chartData = [];
 
 const trafficChart = new Chart(ctx, {
     type: "line",
     data: {
-        labels:   chartLabels,
+        labels: chartLabels,
         datasets: [{
-            label:               "Vehicles",
-            data:                chartData,
-            borderColor:         "#f5a623",
-            backgroundColor:     "rgba(245,166,35,0.07)",
-            borderWidth:         2,
-            pointRadius:         3,
+            label: "Vehicles",
+            data: chartData,
+            borderColor: "#f5a623",
+            backgroundColor: "rgba(245,166,35,0.07)",
+            borderWidth: 2,
+            pointRadius: 3,
             pointBackgroundColor: "#f5a623",
-            fill:                true,
-            tension:             0.4,
+            fill: true,
+            tension: 0.4,
         }],
     },
     options: {
-        responsive:          true,
+        responsive: true,
         maintainAspectRatio: false,
         plugins: { legend: { display: false } },
         scales: {
@@ -137,7 +137,7 @@ function addLog(message, type = "info") {
     const entry = document.createElement("div");
     entry.classList.add("log-entry");
     if (type === "emergency") entry.classList.add("emergency");
-    if (type === "warning")   entry.classList.add("warning");
+    if (type === "warning") entry.classList.add("warning");
     const now = new Date().toLocaleTimeString("en-IN", { hour12: false });
     entry.innerHTML = `<span class="log-time">${now}</span><span>${message}</span>`;
     activityLogEl.prepend(entry);
@@ -160,9 +160,9 @@ function setSignalLights(laneName, color) {
     red.classList.remove("active");
     yellow.classList.remove("active");
     green.classList.remove("active");
-    if (color === "green")  green.classList.add("active");
+    if (color === "green") green.classList.add("active");
     if (color === "yellow") yellow.classList.add("active");
-    if (color === "red")    red.classList.add("active");
+    if (color === "red") red.classList.add("active");
 }
 
 function updateSignals(activeSignal, isEmergency) {
@@ -179,7 +179,7 @@ function updateSignals(activeSignal, isEmergency) {
 
 function updateCarVisibility(activeSignal, isEmergency) {
     const allLanes = Object.keys(lanes);
-    let greenLane  = activeSignal;
+    let greenLane = activeSignal;
 
     if (isEmergency) {
         // Strip suffix like " (Emergency Corridor Active)"
@@ -191,7 +191,7 @@ function updateCarVisibility(activeSignal, isEmergency) {
         if (!car) return;
         const isGreen = lane === greenLane;
         car.style.animationPlayState = isGreen ? "running" : "paused";
-        car.style.opacity            = isGreen ? "1"       : "0.15";
+        car.style.opacity = isGreen ? "1" : "0.15";
     });
 }
 
@@ -226,7 +226,7 @@ function triggerAmbulance(laneName) {
     }
 
     ambulanceTimeout = setTimeout(() => {
-        amb.className = "ambulance";
+        amb.classList.remove("active", "dir-north", "dir-south", "dir-east", "dir-west");
         ambulanceTimeout = null;
     }, 4000);
 }
@@ -237,20 +237,20 @@ function startCountdown(seconds) {
     const fill = document.getElementById("signal-bar-fill");
     if (!fill) return;
 
-    let remaining         = seconds;
+    let remaining = seconds;
     fill.style.transition = "none";
-    fill.style.width      = "100%";
+    fill.style.width = "100%";
 
     countdownInterval = setInterval(() => {
         remaining--;
         if (remaining <= 0) {
             stopCountdown();
-            fill.style.width          = "0%";
+            fill.style.width = "0%";
             signalTimerEl.textContent = "0s";
             return;
         }
-        fill.style.transition     = "width 1s linear";
-        fill.style.width          = `${(remaining / seconds) * 100}%`;
+        fill.style.transition = "width 1s linear";
+        fill.style.width = `${(remaining / seconds) * 100}%`;
         signalTimerEl.textContent = `${remaining}s`;
     }, 1000);
 }
@@ -271,37 +271,58 @@ function interruptAndRestart(data) {
 
 // ── Congestion badge ──
 function setCongestion(level) {
-    const el     = document.getElementById("congestion-level");
+    const el = document.getElementById("congestion-level");
     el.className = `congestion-badge ${level.toLowerCase()}`;
     el.textContent = level.toUpperCase();
 }
 
 // ── Lane bars ──
 const TREND_DISPLAY = {
-    spike:  { arrow: "↑↑" }, rising: { arrow: "↑" },
-    stable: { arrow: "→"  }, easing: { arrow: "↓" },
+    spike: { arrow: "↑↑" }, rising: { arrow: "↑" },
+    stable: { arrow: "→" }, easing: { arrow: "↓" },
 };
 
 function updateLane(laneName, count, status, predictionInfo, isActive) {
     const el = lanes[laneName];
     if (!el) return;
-    el.count.textContent  = count;
-    el.bar.style.width    = `${Math.min(count, 80) / 80 * 100}%`;
-    el.badge.textContent  = count;
-    const statusMap       = { critical: "Critical density", moderate: "Moderate load", clear: "Clear" };
+    el.count.textContent = count;
+    el.bar.style.width = `${Math.min(count, 80) / 80 * 100}%`;
+    el.badge.textContent = count;
+    const statusMap = { critical: "Critical density", moderate: "Moderate load", clear: "Clear" };
     el.status.textContent = statusMap[status] || "";
     el.badge.classList.toggle("critical", status === "critical");
     if (el.item) el.item.classList.toggle("active-lane", !!isActive);
 
     if (predictionInfo && el.trend && el.forecast) {
         const { severity, change, adjusted_score } = predictionInfo;
-        const display         = TREND_DISPLAY[severity] || TREND_DISPLAY.stable;
-        el.trend.textContent  = display.arrow;
-        el.trend.className    = `lane-trend ${severity}`;
-        const sign            = change >= 0 ? "+" : "";
+        const display = TREND_DISPLAY[severity] || TREND_DISPLAY.stable;
+        el.trend.textContent = display.arrow;
+        el.trend.className = `lane-trend ${severity}`;
+        const sign = change >= 0 ? "+" : "";
         el.forecast.textContent = `${sign}${change} predicted · score ${adjusted_score}`;
-        el.forecast.className   = `lane-forecast ${severity}`;
+        el.forecast.className = `lane-forecast ${severity}`;
     }
+}
+
+// ── Shared emergency stop UI logic (used by button AND auto-stop timer) ──
+async function stopEmergencyMode() {
+    if (window._emergencyAutoStop) { clearTimeout(window._emergencyAutoStop); window._emergencyAutoStop = null; }
+    if (ambulanceTimeout) { clearTimeout(ambulanceTimeout); ambulanceTimeout = null; }
+    ambulanceEl.className = "ambulance";
+
+    try { await fetch("/api/emergency/stop", { method: "POST" }); } catch (_) { }
+
+    emergencyActive = false;
+    emergencyBanner.classList.remove("active");
+    emergencyBtn.innerHTML = `<span class="btn-icon">🚨</span> Trigger Emergency Priority`;
+    emergencyBtn.classList.remove("active");
+    junctionStateTag.textContent = "ADAPTIVE MODE";
+    junctionStateTag.classList.remove("emergency");
+    addLog("Emergency stopped — returning to adaptive control.", "info");
+
+    const freshRes = await fetch("/api/traffic-data");
+    const freshData = await freshRes.json();
+    interruptAndRestart(freshData);
 }
 
 // ── EMERGENCY HANDLER ──
@@ -315,7 +336,7 @@ emergencyBtn.addEventListener("click", async () => {
             url = `/api/emergency/stop`;
         }
 
-        const res  = await fetch(url, { method: "POST" });
+        const res = await fetch(url, { method: "POST" });
         const data = await res.json();
 
         emergencyActive = data.emergency_mode;
@@ -323,34 +344,30 @@ emergencyBtn.addEventListener("click", async () => {
         if (emergencyActive) {
             emergencyBanner.classList.add("active");
             emergencyBannerTx.textContent = `EMERGENCY ACTIVE — ${data.active_lane}`;
-            emergencyBtn.innerHTML        = "🚨 Cancel Emergency Mode";
+            emergencyBtn.innerHTML = "🚨 Cancel Emergency Mode";
             emergencyBtn.classList.add("active");
-            junctionStateTag.textContent  = "EMERGENCY MODE";
+            junctionStateTag.textContent = "EMERGENCY MODE";
             junctionStateTag.classList.add("emergency");
 
+            // Fix 1: was data.emergency_lane (undefined) — correct field is data.active_lane
             triggerAmbulance(data.active_lane);
             addLog(`Emergency activated for ${data.active_lane}`, "emergency");
 
+            // Fix 3: auto-stop after 60s — clear any previous auto-stop timer first
+            if (window._emergencyAutoStop) clearTimeout(window._emergencyAutoStop);
+            window._emergencyAutoStop = setTimeout(async () => {
+                if (!emergencyActive) return;          // already cancelled manually
+                addLog("Emergency auto-stopped after 60s corridor clearance.", "info");
+                await stopEmergencyMode();
+            }, 60000);
+
             // Fetch fresh data so emergency_mode=true is reflected immediately
-            const freshRes  = await fetch("/api/traffic-data");
+            const freshRes = await fetch("/api/traffic-data");
             const freshData = await freshRes.json();
             interruptAndRestart(freshData);
 
         } else {
-            if (ambulanceTimeout) { clearTimeout(ambulanceTimeout); ambulanceTimeout = null; }
-            ambulanceEl.className = "ambulance";
-
-            emergencyBanner.classList.remove("active");
-            emergencyBtn.innerHTML = `<span class="btn-icon">🚨</span> Trigger Emergency Priority`;
-            emergencyBtn.classList.remove("active");
-            junctionStateTag.textContent  = "ADAPTIVE MODE";
-            junctionStateTag.classList.remove("emergency");
-            addLog("Emergency stopped — returning to adaptive control", "info");
-
-            // Interrupt emergency cycle and immediately fetch fresh adaptive data
-            const freshRes  = await fetch("/api/traffic-data");
-            const freshData = await freshRes.json();
-            interruptAndRestart(freshData);
+            await stopEmergencyMode();
         }
 
         if (data.message) aiMessageEl.textContent = data.message;
@@ -362,7 +379,7 @@ emergencyBtn.addEventListener("click", async () => {
 // ── MAIN TRAFFIC POLLING ──
 async function fetchTrafficData() {
     try {
-        const res  = await fetch("/api/traffic-data");
+        const res = await fetch("/api/traffic-data");
         const data = await res.json();
 
         // Emergency duplicate-log guard
@@ -370,23 +387,23 @@ async function fetchTrafficData() {
             if (!lastEmergencyState || lastEmergencyLane !== data.active_signal) {
                 addLog(`Emergency active → ${data.active_signal}`, "emergency");
                 lastEmergencyState = true;
-                lastEmergencyLane  = data.active_signal;
+                lastEmergencyLane = data.active_signal;
             }
         } else {
             lastEmergencyState = false;
-            lastEmergencyLane  = null;
+            lastEmergencyLane = null;
         }
 
         // Top metrics
-        vehicleCountEl.textContent    = data.vehicle_count;
-        cycleCountEl.textContent      = `#${data.cycle_count}`;
+        vehicleCountEl.textContent = data.vehicle_count;
+        cycleCountEl.textContent = `#${data.cycle_count}`;
         efficiencyDisplay.textContent = `${data.traffic_efficiency}%`;
-        waitDisplay.textContent       = `${data.wait_time}s`;
-        signalTimerEl.textContent     = `${data.green_time}s`;
+        waitDisplay.textContent = `${data.wait_time}s`;
+        signalTimerEl.textContent = `${data.green_time}s`;
 
         setCongestion(data.congestion);
         activeSignalEl.textContent = data.active_signal;
-        predictionEl.textContent   = data.prediction;
+        predictionEl.textContent = data.prediction;
         trafficAlertEl.textContent = data.traffic_alert;
 
         document.getElementById("alert-card").classList.toggle("critical", data.congestion === "High");
@@ -394,12 +411,15 @@ async function fetchTrafficData() {
         if (!emergencyActive) aiMessageEl.textContent = data.ai_message;
 
         // Lane updates
-        const activeLane = data.active_signal.replace(" (Emergency Corridor Active)", "").trim();
+        const activeLane = data.emergency_mode
+            ? data.active_signal.replace(" (Emergency Corridor Active)", "").trim()
+            : data.active_signal;
+
         const laneMap = {
             "North Lane": { count: data.north_lane, status: data.congestion_breakdown?.["North Lane"] || "clear", pred: data.lane_predictions?.["North Lane"] },
-            "East Lane":  { count: data.east_lane,  status: data.congestion_breakdown?.["East Lane"]  || "clear", pred: data.lane_predictions?.["East Lane"]  },
+            "East Lane": { count: data.east_lane, status: data.congestion_breakdown?.["East Lane"] || "clear", pred: data.lane_predictions?.["East Lane"] },
             "South Lane": { count: data.south_lane, status: data.congestion_breakdown?.["South Lane"] || "clear", pred: data.lane_predictions?.["South Lane"] },
-            "West Lane":  { count: data.west_lane,  status: data.congestion_breakdown?.["West Lane"]  || "clear", pred: data.lane_predictions?.["West Lane"]  },
+            "West Lane": { count: data.west_lane, status: data.congestion_breakdown?.["West Lane"] || "clear", pred: data.lane_predictions?.["West Lane"] },
         };
         Object.entries(laneMap).forEach(([name, info]) => {
             updateLane(name, info.count, info.status, info.pred, name === activeLane);
@@ -407,12 +427,12 @@ async function fetchTrafficData() {
 
         // Hotspot card
         const hotspotCard = document.getElementById("hotspot-card");
-        const hotspotMsg  = document.getElementById("hotspot-message");
-        const hotspots    = data.upcoming_hotspots || [];
+        const hotspotMsg = document.getElementById("hotspot-message");
+        const hotspots = data.upcoming_hotspots || [];
         if (hotspots.length > 0) {
-            const hl              = hotspots[0];
-            const change          = data.lane_predictions?.[hl]?.change || "?";
-            hotspotMsg.textContent    = `${hl} is currently light but forecast to surge by +${change} vehicles next cycle. AI flagged for pre-emptive monitoring.`;
+            const hl = hotspots[0];
+            const change = data.lane_predictions?.[hl]?.change || "?";
+            hotspotMsg.textContent = `${hl} is currently light but forecast to surge by +${change} vehicles next cycle. AI flagged for pre-emptive monitoring.`;
             hotspotCard.style.display = "block";
         } else {
             hotspotCard.style.display = "none";
@@ -429,6 +449,7 @@ async function fetchTrafficData() {
         }
 
         handleSignalTiming(data);
+        updateChart(data.vehicle_count);
 
     } catch (err) {
         isSwitching = false;  // unblock on network error
@@ -440,7 +461,7 @@ function handleSignalTiming(data) {
     const newActive = data.active_signal;
     const greenTime = data.green_time;
 
-    if (isSwitching) return;
+    if (isSwitching && !data.emergency_mode) return;
     isSwitching = true;
 
     currentActiveLane = newActive;

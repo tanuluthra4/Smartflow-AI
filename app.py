@@ -132,6 +132,7 @@ def traffic_data():
         "emergency_mode":       emergency_mode,
         "cycle_count":          cycle_count,
         "total_density":        sum(lane_data.values()),
+        "emergency_lane": emergency_lane_active,
         "metrics": {
             "estimated_wait_reduction": round(green_time * 0.8, 2),
             "traffic_efficiency_score": min(100, 50 + green_time),

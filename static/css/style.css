@@ -231,20 +231,20 @@ body {
 /* states */
 .status-pill.low {
     color: var(--green);
-    background: rgba(34,217,122,0.12);
-    border-color: rgba(34,217,122,0.3);
+    background: rgba(34, 217, 122, 0.12);
+    border-color: rgba(34, 217, 122, 0.3);
 }
 
 .status-pill.medium {
     color: var(--yellow);
-    background: rgba(255,209,102,0.12);
-    border-color: rgba(255,209,102,0.3);
+    background: rgba(255, 209, 102, 0.12);
+    border-color: rgba(255, 209, 102, 0.3);
 }
 
 .status-pill.high {
     color: var(--red);
-    background: rgba(240,62,62,0.12);
-    border-color: rgba(240,62,62,0.3);
+    background: rgba(240, 62, 62, 0.12);
+    border-color: rgba(240, 62, 62, 0.3);
 }
 
 .congestion-badge {
@@ -265,22 +265,22 @@ body {
 /* LOW */
 .congestion-badge.low {
     color: var(--green);
-    background: rgba(34,217,122,0.12);
-    border-color: rgba(34,217,122,0.35);
+    background: rgba(34, 217, 122, 0.12);
+    border-color: rgba(34, 217, 122, 0.35);
 }
 
 /* MEDIUM */
 .congestion-badge.medium {
     color: var(--yellow);
-    background: rgba(255,209,102,0.12);
-    border-color: rgba(255,209,102,0.35);
+    background: rgba(255, 209, 102, 0.12);
+    border-color: rgba(255, 209, 102, 0.35);
 }
 
 /* HIGH */
 .congestion-badge.high {
     color: var(--red);
-    background: rgba(240,62,62,0.12);
-    border-color: rgba(240,62,62,0.35);
+    background: rgba(240, 62, 62, 0.12);
+    border-color: rgba(240, 62, 62, 0.35);
 }
 
 .system-status {
@@ -1650,4 +1650,91 @@ body {
     border-radius: 2px;
     transition: width 0.5s linear;
     box-shadow: 0 0 6px var(--green);
+}
+
+/* ── AMBULANCE DIRECTION ANIMATIONS ──
+   The JS adds .dir-north/south/east/west + .active.
+   Without these classes the ambulance always uses the
+   default ambMove (top → bottom) regardless of lane.    */
+
+/* North → enters top, travels down (same as default but explicit) */
+.ambulance.active.dir-north {
+    left: calc(50% - 38px);
+    top: -60px;
+    width: 22px;
+    height: 38px;
+    transform: rotate(0deg);
+    animation: ambMoveNorth 3.5s linear forwards;
+}
+
+@keyframes ambMoveNorth {
+    from {
+        top: -60px;
+    }
+
+    to {
+        top: 430px;
+    }
+}
+
+/* South → enters bottom, travels up (flip vertically) */
+.ambulance.active.dir-south {
+    left: calc(50% - 11px);
+    bottom: -60px;
+    top: auto;
+    width: 22px;
+    height: 38px;
+    transform: rotate(180deg);
+    animation: ambMoveSouth 3.5s linear forwards;
+}
+
+@keyframes ambMoveSouth {
+    from {
+        bottom: -60px;
+    }
+
+    to {
+        bottom: 430px;
+    }
+}
+
+/* East → enters right, travels left (rotate 90° CCW) */
+.ambulance.active.dir-east {
+    right: -60px;
+    left: auto;
+    top: calc(50% - 38px);
+    width: 38px;
+    height: 22px;
+    transform: rotate(90deg);
+    animation: ambMoveEast 3.5s linear forwards;
+}
+
+@keyframes ambMoveEast {
+    from {
+        right: -60px;
+    }
+
+    to {
+        right: 430px;
+    }
+}
+
+/* West → enters left, travels right (rotate 90° CW) */
+.ambulance.active.dir-west {
+    left: -60px;
+    top: calc(50% - 11px);
+    width: 38px;
+    height: 22px;
+    transform: rotate(-90deg);
+    animation: ambMoveWest 3.5s linear forwards;
+}
+
+@keyframes ambMoveWest {
+    from {
+        left: -60px;
+    }
+
+    to {
+        left: 430px;
+    }
 }
